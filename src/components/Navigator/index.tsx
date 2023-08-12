@@ -79,7 +79,14 @@ export default function AppNavigator() {
         barStyle={isAndroid ? 'light-content' : 'dark-content'}
       />
       {isLoading ? (
-        <></>
+        <Text
+          style={{
+            display: 'flex',
+            alignSelf: 'center',
+            // justifyContent: 'center',
+          }}>
+          Loading...
+        </Text>
       ) : (
         <Stack.Navigator
           screenOptions={{

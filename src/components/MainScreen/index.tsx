@@ -30,8 +30,8 @@ const MainScreen = ({navigation}: any) => {
       USER_ID: '1234',
       ORD_DT: new Date().toDateString(),
       ORD_NO: nanoid(),
-      COMPANY_CODE: userState.COMPANY_CODE,
-      CLIENT_CODE: userState.CLIENT_CODE,
+      COMP_CD: userState.COMP_CD,
+      CLIENT_CD: userState.CLIENT_CD,
       AGENT_ID: userState.AGENT_ID,
     };
     initializeOrder(orderData)(orderDetailsDispatch);

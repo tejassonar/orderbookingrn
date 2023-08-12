@@ -17,8 +17,8 @@ interface OrderDetailsInterface {
   PARTY_CD?: String;
   REMARK?: String;
   PARTY_NM?: String;
-  COMPANY_CODE?: String;
-  CLIENT_CODE?: String;
+  COMP_CD?: String;
+  CLIENT_CD?: String;
   AGENT_ID?: String;
   // };
   // OrderStatus?: String;

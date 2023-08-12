@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -13,12 +13,15 @@ import {businessman} from '../../assets/businessman';
 import {postRequest} from '../../utils/api';
 import {ActivityIndicator} from 'react-native';
 import {login} from '../../utils/login';
+import {updateUserDetails} from '../../actions/user';
+import {UserContext} from '../../reducers/user';
 
 const LoginScreen = ({navigation}: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const {state: userState, dispatch: userDispatch} = useContext(UserContext);
   const handleEmailChange = (email: any) => {
     setEmail(email);
   };
@@ -42,14 +45,15 @@ const LoginScreen = ({navigation}: any) => {
       // Call API or perform other login actions
       // postRequest('/users/login', {email: email, password: password})
       //   .then(() => {
-      //     navigation.navigate('MainScreen');
       //     setLoading(false);
+      //     navigation.navigate('MainScreen');
       //   })
       //   .catch(err => {
       //     Alert.alert(err);
       //     setLoading(false);
       //   });
       const data = await login(email, password);
+      updateUserDetails(data)(userDispatch);
       setLoading(false);
       navigation.navigate('MainScreen');
 
@@ -68,6 +72,7 @@ const LoginScreen = ({navigation}: any) => {
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor={Colors.GRAY_LIGHTEST}
         keyboardType="email-address"
         autoCapitalize="none"
         value={email}
@@ -76,6 +81,7 @@ const LoginScreen = ({navigation}: any) => {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor={Colors.GRAY_LIGHTEST}
         secureTextEntry={true}
         value={password}
         onChangeText={handlePasswordChange}

@@ -59,7 +59,6 @@ const AllOrders = ({navigation}: any) => {
                         minHeight: 80,
                       }}
                       onPress={async () => {
-                        console.log(order, '=============');
                         addBulkItemsToOrder(order.ITEMS)(orderDispatch);
                         const {ITEMS, ...orderDetails} = order;
                         addOrderDetails(orderDetails)(orderDetailsDispatch);

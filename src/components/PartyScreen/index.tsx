@@ -51,9 +51,9 @@ const Search = ({navigation}: any) => {
   const getAllParties = async () => {
     try {
       const parties = await getAuthenticatedRequest('/parties');
-      console.log(parties.data, '=====');
+      // console.log(parties.data, '=====');
       setList(parties.data);
-      console.log(Object.keys(parties), 'parties');
+      // console.log(Object.keys(parties), 'parties');
     } catch (err) {
       console.log(err, 'Error');
     }
@@ -164,7 +164,8 @@ const Search = ({navigation}: any) => {
                           ? Colors.WHITE
                           : Colors.TEXT_COLOR,
                     }}>
-                    {props.item.PARTY_NM}
+                    {props.item.PARTY_NM} {props.item.PLACE ? '-' : ''}{' '}
+                    {props.item.PLACE}
                   </Text>
                 </TouchableOpacity>
               ) : // memoizedRenderSearchSpecieCard(props)
@@ -192,7 +193,8 @@ const Search = ({navigation}: any) => {
                           ? Colors.WHITE
                           : Colors.TEXT_COLOR,
                     }}>
-                    {props.item.PARTY_NM}
+                    {props.item.PARTY_NM} {props.item.PLACE ? '-' : ''}{' '}
+                    {props.item.PLACE}
                   </Text>
                 </TouchableOpacity>
               ) : (

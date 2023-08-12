@@ -87,7 +87,7 @@ const Search = ({navigation}: any) => {
                 onPress={() => {
                   setSearchText('');
                 }}>
-                <Ionicons name="md-close" size={20} style={styles.closeIcon} />
+                <Ionicons name="close" size={25} style={styles.closeIcon} />
               </TouchableOpacity>
             ) : (
               []
@@ -118,7 +118,9 @@ const Search = ({navigation}: any) => {
         style={{flex: 1}}
         data={showSearchItems ? searchList : list}
         showsVerticalScrollIndicator={false}
-        keyExtractor={item => item?.LORY_CD}
+        keyExtractor={(item, index) => {
+          return index;
+        }}
         keyboardShouldPersistTaps="always"
         ListHeaderComponent={renderListHeader}
         contentContainerStyle={{}}
@@ -142,7 +144,6 @@ const Search = ({navigation}: any) => {
                         : 'white',
                   }}
                   onPress={() => {
-                    console.log(props.item.LORY_CD);
                     setSelectedItem(props.item);
                   }}>
                   <Text
@@ -152,7 +153,7 @@ const Search = ({navigation}: any) => {
                           ? Colors.WHITE
                           : Colors.TEXT_COLOR,
                     }}>
-                    {props.item.LORY_NO}
+                    {props.item.ITEM_NM} - {props.item.LORY_NO}
                   </Text>
                 </TouchableOpacity>
               ) : // memoizedRenderSearchSpecieCard(props)
@@ -170,7 +171,6 @@ const Search = ({navigation}: any) => {
                         : 'white',
                   }}
                   onPress={() => {
-                    console.log(props.item.LORY_CD);
                     setSelectedItem(props.item);
                   }}>
                   <Text
@@ -180,7 +180,7 @@ const Search = ({navigation}: any) => {
                           ? Colors.WHITE
                           : Colors.TEXT_COLOR,
                     }}>
-                    {props.item.LORY_NO}
+                    {props.item.ITEM_NM} - {props.item.LORY_NO}
                   </Text>
                 </TouchableOpacity>
               ) : (

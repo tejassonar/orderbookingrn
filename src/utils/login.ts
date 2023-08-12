@@ -12,10 +12,11 @@ export const login = async (email: string, password: string) => {
 
   const userData = {
     userId: response.data._id,
-    email: response.data.email,
+    email: response.data.EMAIl,
     accessToken: response.data.token,
   };
+
   await AsyncStorage.setItem('User', JSON.stringify(userData));
-  return;
+  return response.data;
   //   });
 };

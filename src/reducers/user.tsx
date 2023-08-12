@@ -14,8 +14,8 @@ const initialState = {
   PASSWORD: null,
   PHONE_NUMBER: null,
   AGENT_ID: null,
-  COMPANY_CODE: null,
-  CLIENT_CODE: null,
+  COMP_CD: null,
+  CLIENT_CD: null,
 };
 
 // User reducer function which takes the state and action param
