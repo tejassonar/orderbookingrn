@@ -18,6 +18,7 @@ import {OrderContext} from '../../reducers/order';
 import {postRequest} from '../../utils/api';
 import {emptyOrderStore} from '../../actions/order';
 import {emptyOrderDetails} from '../../actions/orderDetails';
+import {Table, Row} from 'react-native-table-component';
 
 const OrderReview = ({navigation, route}: any) => {
   const scroll = useRef();
@@ -95,7 +96,7 @@ const OrderReview = ({navigation, route}: any) => {
                 />
               </View>
 
-              <View
+              {/* <View
                 style={{
                   flex: 1,
                   flexDirection: 'row',
@@ -104,8 +105,8 @@ const OrderReview = ({navigation, route}: any) => {
                 <Text style={[styles.itemHeader, {flex: 2}]}>Item</Text>
                 <Text style={styles.itemHeader}>Quantity</Text>
                 <Text style={styles.itemHeader}>Price</Text>
-              </View>
-              {orderState.map((item: any, index: number) => (
+              </View> */}
+              {/* {orderState.map((item: any, index: number) => (
                 <View
                   style={{
                     flex: 1,
@@ -113,13 +114,37 @@ const OrderReview = ({navigation, route}: any) => {
                     marginVertical: 10,
                   }}
                   key={`item-${index}`}>
-                  <Text style={[styles.item, {flex: 2}]}>{item.LORY_NO}</Text>
+                  <Text style={[styles.item, {flex: 2}]}>
+                    {' '}
+                    {item.ITEM_NM} - {item.LORY_NO}
+                  </Text>
                   <Text style={styles.item}>{item.QTY}</Text>
                   <Text style={styles.item}>{item.RATE}</Text>
                 </View>
-              ))}
+              ))} */}
 
               {/* <ExportGeoJSON inventory={inventory} /> */}
+              <View style={{marginTop: 20}}>
+                <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
+                  <Row
+                    data={['Item', 'Quantity', 'Price']}
+                    style={styles.head}
+                    textStyle={styles.headerText}
+                  />
+                  {orderState.map((item, index) => (
+                    <Row
+                      key={`item-${index}`}
+                      data={[
+                        `${item.ITEM_NM} - ${item.LORY_NO}`,
+                        item.QTY,
+                        item.RATE,
+                      ]}
+                      // style={styles.text}
+                      textStyle={styles.text}
+                    />
+                  ))}
+                </Table>
+              </View>
             </ScrollView>
             {!isSavedOrder && (
               <View style={styles.bottomButtonContainer}>
@@ -145,6 +170,13 @@ const OrderReview = ({navigation, route}: any) => {
   );
 };
 const styles = StyleSheet.create({
+  head: {height: 40, backgroundColor: '#f1f8ff'},
+  text: {margin: 6, fontFamily: Typography.FONT_FAMILY_REGULAR},
+  headerText: {
+    margin: 6,
+    fontWeight: '600',
+    fontFamily: Typography.FONT_FAMILY_REGULAR,
+  },
   container: {
     flex: 1,
     paddingHorizontal: 25,

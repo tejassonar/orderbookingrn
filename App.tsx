@@ -26,6 +26,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import Provider from './src/reducers/Provider';
 import AppNavigator from './src/components/Navigator';
+import {PaperProvider} from 'react-native-paper';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -42,7 +43,9 @@ function App(): JSX.Element {
 
   return (
     <Provider>
-      <AppNavigator />
+      <PaperProvider>
+        <AppNavigator />
+      </PaperProvider>
     </Provider>
   );
 }

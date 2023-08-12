@@ -108,7 +108,8 @@ const Search = ({navigation}: any) => {
   const onPressContinue = () => {
     navigation.navigate('ItemDetails', {
       itemCode: selectedItem.LORY_CD,
-      itemName: selectedItem.LORY_NO,
+      itemNumber: selectedItem.LORY_NO,
+      itemName: selectedItem.ITEM_NM,
     });
   };
   return (

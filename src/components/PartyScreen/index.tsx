@@ -164,8 +164,10 @@ const Search = ({navigation}: any) => {
                           ? Colors.WHITE
                           : Colors.TEXT_COLOR,
                     }}>
-                    {props.item.PARTY_NM} {props.item.PLACE ? '-' : ''}{' '}
-                    {props.item.PLACE}
+                    {props.item.PARTY_NM}{' '}
+                    {props.item.PLACE || props.item.ADD1 ? '-' : ' '}{' '}
+                    {props.item.ADD1 || ''}
+                    {props.item.PLACE ? ',' : ''} {props.item.PLACE}
                   </Text>
                 </TouchableOpacity>
               ) : // memoizedRenderSearchSpecieCard(props)
@@ -193,8 +195,10 @@ const Search = ({navigation}: any) => {
                           ? Colors.WHITE
                           : Colors.TEXT_COLOR,
                     }}>
-                    {props.item.PARTY_NM} {props.item.PLACE ? '-' : ''}{' '}
-                    {props.item.PLACE}
+                    {props.item.PARTY_NM}{' '}
+                    {props.item.PLACE || props.item.ADD1 ? '-' : ' '}
+                    {props.item.ADD1 || ''}
+                    {props.item.ADD1 ? ',' : ''} {props.item.PLACE}
                   </Text>
                 </TouchableOpacity>
               ) : (

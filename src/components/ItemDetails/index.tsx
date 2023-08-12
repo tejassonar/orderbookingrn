@@ -79,7 +79,8 @@ export const ItemDetails = ({navigation, route}: any) => {
       RATE: diameter,
       QTY: height,
       LORY_CD: route.params.itemCode,
-      LORY_NO: route.params.itemName,
+      LORY_NO: route.params.itemNumber,
+      ITEM_NM: route.params.itemName,
     };
     addItemToOrder(item)(orderDispatch);
   };

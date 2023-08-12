@@ -13,7 +13,7 @@ const Label = ({
   return (
     <View style={[styles.container, style]}>
       <Text style={[styles.leftText, leftTextStyle]}>{leftText}</Text>
-      <TouchableOpacity onPress={onPressRightText}>
+      <TouchableOpacity onPress={onPressRightText} style={{flex: 1}}>
         <Text
           style={[styles.rightText, rightTextStyle]}
           accessibilityLabel="Label Button"
