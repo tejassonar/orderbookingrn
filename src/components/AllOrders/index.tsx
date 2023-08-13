@@ -68,10 +68,15 @@ const AllOrders = ({navigation}: any) => {
                         style={{
                           display: 'flex',
                           flexDirection: 'row',
-                          flex: 4,
+                          flex: 1,
                         }}>
                         <Text style={styles.partyCode}>{order.PARTY_CD}</Text>
-                        <Text style={styles.item}>{order.PARTY_NM}</Text>
+                        <View style={{flex: 3}}>
+                          <Text style={styles.item}>{order.PARTY_NM}</Text>
+                          <Text style={styles.subText}>
+                            {order.ADD1} {order.PLACE}
+                          </Text>
+                        </View>
                       </View>
                     </TouchableOpacity>
                   );
@@ -108,6 +113,15 @@ const styles = StyleSheet.create({
     flex: 3,
     flexDirection: 'row',
     fontSize: Typography.FONT_SIZE_20,
+    lineHeight: Typography.LINE_HEIGHT_24,
+    color: Colors.TEXT_COLOR,
+    fontWeight: '400',
+    alignSelf: 'flex-start',
+  },
+  subText: {
+    flex: 3,
+    flexDirection: 'row',
+    fontSize: Typography.FONT_SIZE_14,
     lineHeight: Typography.LINE_HEIGHT_24,
     color: Colors.TEXT_COLOR,
     fontWeight: '400',

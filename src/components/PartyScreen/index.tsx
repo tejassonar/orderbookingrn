@@ -118,6 +118,8 @@ const Search = ({navigation}: any) => {
     addParty({
       partyCode: selectedParty.PARTY_CD,
       partyName: selectedParty.PARTY_NM,
+      address: selectedParty.ADD1,
+      place: selectedParty.PLACE,
     })(dispatch);
 
     navigation.navigate('ItemScreen');

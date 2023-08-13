@@ -20,6 +20,8 @@ interface OrderDetailsInterface {
   COMP_CD?: String;
   CLIENT_CD?: String;
   AGENT_ID?: String;
+  ADD1: String;
+  PLACE: String;
   // };
   // OrderStatus?: String;
 }
@@ -47,6 +49,8 @@ const OrderDetailsReducer = (state = initialState, action) => {
         ...state,
         PARTY_CD: action.payload.partyCode,
         PARTY_NM: action.payload.partyName,
+        ADD1: action.payload.address,
+        PLACE: action.payload.place,
       };
     case ADD_REMARK:
       return {

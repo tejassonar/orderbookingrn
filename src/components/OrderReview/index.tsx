@@ -94,6 +94,14 @@ const OrderReview = ({navigation, route}: any) => {
                   onPressRightText={() => console.log('Pressed')}
                   rightTextStyle={{color: Colors.TEXT_COLOR}}
                 />
+                <Label
+                  leftText={'Address'}
+                  rightText={`${orderDetailsState.ADD1} ${
+                    orderDetailsState.ADD1 ? ',' : ''
+                  } ${orderDetailsState.PLACE}`}
+                  onPressRightText={() => console.log('Pressed')}
+                  rightTextStyle={{color: Colors.TEXT_COLOR}}
+                />
               </View>
 
               {/* <View
@@ -171,11 +179,16 @@ const OrderReview = ({navigation, route}: any) => {
 };
 const styles = StyleSheet.create({
   head: {height: 40, backgroundColor: '#f1f8ff'},
-  text: {margin: 6, fontFamily: Typography.FONT_FAMILY_REGULAR},
+  text: {
+    margin: 6,
+    fontFamily: Typography.FONT_FAMILY_REGULAR,
+    color: Colors.TEXT_COLOR,
+  },
   headerText: {
     margin: 6,
     fontWeight: '600',
     fontFamily: Typography.FONT_FAMILY_REGULAR,
+    color: Colors.TEXT_COLOR,
   },
   container: {
     flex: 1,
