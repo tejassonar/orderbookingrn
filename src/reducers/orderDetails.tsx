@@ -19,7 +19,7 @@ interface OrderDetailsInterface {
   PARTY_NM?: String;
   COMP_CD?: String;
   CLIENT_CD?: String;
-  AGENT_ID?: String;
+  AGENT_CD?: String;
   ADD1: String;
   PLACE: String;
   // };

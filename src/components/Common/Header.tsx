@@ -119,7 +119,7 @@ const Header = ({
         )}
       </View>
       {subHeadingText ? (
-        <View style={{marginVertical: 10}}>
+        <View style={{marginVertical: 10, zIndex: -1}}>
           <Text
             style={[styles.subHeadingText, textAlignStyle, subHeadingStyle]}>
             {subHeadingText}

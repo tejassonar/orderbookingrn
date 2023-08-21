@@ -16,12 +16,14 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import useDebounce from '../../hooks/useDebounce';
 import PrimaryButton from '../Common/PrimaryButton';
 import {OrderDetailsContext} from '../../reducers/orderDetails';
+import AlertModal from '../Common/AlertModal';
 
 const Search = ({navigation}: any) => {
   const [searchText, setSearchText] = useState('');
   const [list, setList] = useState([]);
   const [searchList, setSearchList] = useState([]);
   const [showSearchItems, setShowSearchItems] = useState(false);
+  const [noItemModal, setNoItemModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState({});
   const {state: orderDetailsState, dispatch} = useContext(OrderDetailsContext);
 
@@ -106,11 +108,15 @@ const Search = ({navigation}: any) => {
   }, [searchText]);
 
   const onPressContinue = () => {
-    navigation.navigate('ItemDetails', {
-      itemCode: selectedItem.LORY_CD,
-      itemNumber: selectedItem.LORY_NO,
-      itemName: selectedItem.ITEM_NM,
-    });
+    if (selectedItem.LORY_CD) {
+      navigation.navigate('ItemDetails', {
+        itemCode: selectedItem.LORY_CD,
+        itemNumber: selectedItem.LORY_NO,
+        itemName: selectedItem.ITEM_NM,
+      });
+    } else {
+      setNoItemModal(true);
+    }
   };
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -196,6 +202,15 @@ const Search = ({navigation}: any) => {
         btnText="Continue"
         onPress={onPressContinue}
         disabled={selectedItem ? false : true}
+      />
+      <AlertModal
+        visible={noItemModal}
+        heading={'No Item selected'}
+        message={`Please select an Item to continue`}
+        primaryBtnText={'Sure'}
+        onPressPrimaryBtn={() => {
+          setNoItemModal(false);
+        }}
       />
     </SafeAreaView>
   );

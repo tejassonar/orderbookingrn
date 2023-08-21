@@ -17,6 +17,7 @@ import useDebounce from '../../hooks/useDebounce';
 import PrimaryButton from '../Common/PrimaryButton';
 import {OrderDetailsContext} from '../../reducers/orderDetails';
 import {addParty} from '../../actions/orderDetails';
+import AlertModal from '../Common/AlertModal';
 
 const Search = ({navigation}: any) => {
   const [searchText, setSearchText] = useState('');
@@ -24,6 +25,7 @@ const Search = ({navigation}: any) => {
   const [searchList, setSearchList] = useState([]);
   const [showSearchParties, setShowSearchParties] = useState(false);
   const [selectedParty, setSelectedParty] = useState({});
+  const [noPartyModal, setNoPartyModal] = useState(false);
   const {state: orderDetailsState, dispatch} = useContext(OrderDetailsContext);
 
   const debouncedSearch = useDebounce(searchText, 700);
@@ -113,16 +115,18 @@ const Search = ({navigation}: any) => {
   }, [searchText]);
 
   const onPressContinue = () => {
-    console.log(selectedParty, 'selectedParty');
+    if (selectedParty.PARTY_CD) {
+      addParty({
+        partyCode: selectedParty.PARTY_CD,
+        partyName: selectedParty.PARTY_NM,
+        address: selectedParty.ADD1,
+        place: selectedParty.PLACE,
+      })(dispatch);
 
-    addParty({
-      partyCode: selectedParty.PARTY_CD,
-      partyName: selectedParty.PARTY_NM,
-      address: selectedParty.ADD1,
-      place: selectedParty.PLACE,
-    })(dispatch);
-
-    navigation.navigate('ItemScreen');
+      navigation.navigate('ItemScreen');
+    } else {
+      setNoPartyModal(true);
+    }
   };
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -215,6 +219,15 @@ const Search = ({navigation}: any) => {
         btnText="Continue"
         onPress={onPressContinue}
         disabled={selectedParty ? false : true}
+      />
+      <AlertModal
+        visible={noPartyModal}
+        heading={'No Party selected'}
+        message={`Please select an Item to continue`}
+        primaryBtnText={'Sure'}
+        onPressPrimaryBtn={() => {
+          setNoPartyModal(false);
+        }}
       />
     </SafeAreaView>
   );

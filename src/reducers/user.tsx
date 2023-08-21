@@ -13,7 +13,8 @@ const initialState = {
   EMAIL: null,
   PASSWORD: null,
   PHONE_NUMBER: null,
-  AGENT_ID: null,
+  AGENT_CD: null,
+  ADMIN: false,
   COMP_CD: null,
   CLIENT_CD: null,
 };

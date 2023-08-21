@@ -2,9 +2,10 @@ import Config from 'react-native-config';
 
 let APIConfig = {
   protocol: 'https',
-  url: 'pear-precious-mussel.cyclic.app/api/',
+  // url: 'pear-precious-mussel.cyclic.app/api/',
+  url: 'orderbooking-backend-zg4d.onrender.com/api/',
   // protocol: 'http',
-  // url: '192.168.100.2:8000/api/',
+  // url: '192.168.0.101:8000/api/',
 };
 
 export {APIConfig};

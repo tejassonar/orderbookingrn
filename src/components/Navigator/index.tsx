@@ -54,7 +54,6 @@ export default function AppNavigator() {
               'Expiry',
             );
             const user = await getAuthenticatedRequest('/users');
-            console.log(user.data.AGENT_ID, '==user==');
             updateUserDetails(user.data)(userDispatch);
             setIsLoggedIn(true);
           } else {

@@ -42,16 +42,6 @@ const LoginScreen = ({navigation}: any) => {
       Alert.alert('Please enter your password');
       setLoading(false);
     } else {
-      // Call API or perform other login actions
-      // postRequest('/users/login', {email: email, password: password})
-      //   .then(() => {
-      //     setLoading(false);
-      //     navigation.navigate('MainScreen');
-      //   })
-      //   .catch(err => {
-      //     Alert.alert(err);
-      //     setLoading(false);
-      //   });
       const data = await login(email, password);
       updateUserDetails(data)(userDispatch);
       setLoading(false);

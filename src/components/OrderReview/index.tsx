@@ -84,7 +84,7 @@ const OrderReview = ({navigation, route}: any) => {
 
                 <Label
                   leftText={'Order Date'}
-                  rightText={orderDetailsState.ORD_DT}
+                  rightText={new Date(orderDetailsState.ORD_DT).toDateString()}
                   onPressRightText={() => console.log('Pressed')}
                   rightTextStyle={{color: Colors.TEXT_COLOR}}
                 />

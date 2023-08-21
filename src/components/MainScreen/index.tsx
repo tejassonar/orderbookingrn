@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useContext} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import {booking} from '../../assets/undraw_booking_re_gw4j';
 import {allOrders} from '../../assets/allOrders';
@@ -11,16 +11,20 @@ import {nanoid} from 'nanoid';
 import {emptyOrderStore} from '../../actions/order';
 import {OrderContext} from '../../reducers/order';
 import {UserContext} from '../../reducers/user';
+import DocumentPicker from 'react-native-document-picker';
+import PrimaryButton from '../Common/PrimaryButton';
+import {uploadFileToAPI} from '../../utils/uploadFIletoAPI';
 
 // import {customAlphabet} from 'nanoid/non-secure';
 const MainScreen = ({navigation}: any) => {
   console.log('MainScreen');
+  const [partiesUploading, setPartiesUploading] = useState(false);
+  const [itemsUploading, setItemsUploading] = useState(false);
   const {state: orderDetailsState, dispatch: orderDetailsDispatch} =
     useContext(OrderDetailsContext);
 
   const {state: orderState, dispatch: orderDispatch} = useContext(OrderContext);
   const {state: userState, dispatch: userDispatch} = useContext(UserContext);
-  // console.log(userState, 'userState');
 
   const onPressOrderBooking = () => {
     emptyOrderStore()(orderDispatch);
@@ -32,7 +36,7 @@ const MainScreen = ({navigation}: any) => {
       ORD_NO: nanoid(),
       COMP_CD: userState.COMP_CD,
       CLIENT_CD: userState.CLIENT_CD,
-      AGENT_ID: userState.AGENT_ID,
+      AGENT_CD: userState.AGENT_CD,
     };
     initializeOrder(orderData)(orderDetailsDispatch);
     navigation.navigate('PartyScreen');
@@ -42,6 +46,68 @@ const MainScreen = ({navigation}: any) => {
     navigation.navigate('AllOrders');
   };
 
+  const uploadItems = async () => {
+    // Opening Document Picker to select one file
+    try {
+      const response = await uploadFileToAPI({
+        route: 'items/bulk',
+        key: 'bulkItems',
+        setUploading: setItemsUploading,
+      });
+
+      if (response.status == 200) {
+        Alert.alert('Upload Successful');
+      }
+      // const response = await postAuthenticatedRequest('/parties/bulk', data, {
+      //   'Content-Type': 'multipart/form-data',
+      // });
+
+      console.log(response, 'response');
+
+      // Setting the state to show single file attributes
+      setItemsUploading(false);
+    } catch (err) {
+      setItemsUploading(false);
+      // Handling any exception (If any)
+      if (DocumentPicker.isCancel(err)) {
+        // If user canceled the document selection
+        Alert.alert('Canceled');
+      } else {
+        // For Unknown Error
+        Alert.alert('Unknown Error: ' + JSON.stringify(err));
+        throw err;
+      }
+    }
+  };
+  const uploadParties = async () => {
+    try {
+      const response = await uploadFileToAPI({
+        route: 'parties/bulk',
+        key: 'bulkParties',
+        setUploading: setPartiesUploading,
+      });
+
+      if (response.status == 200) {
+        Alert.alert('Upload Successful');
+      }
+      // const response = await postAuthenticatedRequest('/parties/bulk', data, {
+      //   'Content-Type': 'multipart/form-data',
+      // });
+
+      setPartiesUploading(false);
+    } catch (err) {
+      setPartiesUploading(false);
+      // Handling any exception (If any)
+      if (DocumentPicker.isCancel(err)) {
+        // If user canceled the document selection
+        Alert.alert('Canceled');
+      } else {
+        // For Unknown Error
+        Alert.alert('Unknown Error: ' + JSON.stringify(err));
+        throw err;
+      }
+    }
+  };
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={onPressOrderBooking}>
@@ -52,6 +118,25 @@ const MainScreen = ({navigation}: any) => {
         <SvgXml xml={allOrders} height={'150px'} width={'150px'} />
         <Text style={styles.title}>All Orders</Text>
       </TouchableOpacity>
+      {userState.ADMIN ? (
+        <>
+          <PrimaryButton
+            btnText={partiesUploading ? 'Uploading...' : 'Upload Parties'}
+            onPress={uploadParties}
+            halfWidth={true}
+            style={{marginTop: 25}}
+            disabled={partiesUploading}
+          />
+          <PrimaryButton
+            btnText={itemsUploading ? 'Uploading...' : 'Upload Items'}
+            onPress={uploadItems}
+            halfWidth={true}
+            disabled={itemsUploading}
+          />
+        </>
+      ) : (
+        []
+      )}
     </View>
   );
 };
