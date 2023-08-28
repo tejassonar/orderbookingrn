@@ -33,7 +33,7 @@ const MainScreen = ({navigation}: any) => {
     const orderData = {
       USER_ID: '1234',
       ORD_DT: new Date().toDateString(),
-      ORD_NO: nanoid(),
+      ORD_NO: nanoid(5),
       COMP_CD: userState.COMP_CD,
       CLIENT_CD: userState.CLIENT_CD,
       AGENT_CD: userState.AGENT_CD,

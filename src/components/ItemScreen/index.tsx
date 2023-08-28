@@ -118,6 +118,7 @@ const Search = ({navigation}: any) => {
       setNoItemModal(true);
     }
   };
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       {/* <DismissKeyBoard> */}
@@ -143,6 +144,8 @@ const Search = ({navigation}: any) => {
                     paddingVertical: 10,
                     paddingHorizontal: 8,
                     marginTop: 5,
+                    display: 'flex',
+                    flexDirection: 'row',
                     borderBottomWidth: 1,
                     borderBottomColor: Colors.GRAY_LIGHTEST,
                     backgroundColor:
@@ -155,12 +158,22 @@ const Search = ({navigation}: any) => {
                   }}>
                   <Text
                     style={{
+                      flex: 3,
                       color:
                         props.item.LORY_CD === selectedItem?.LORY_CD
                           ? Colors.WHITE
                           : Colors.TEXT_COLOR,
                     }}>
                     {props.item.ITEM_NM} - {props.item.LORY_NO}
+                  </Text>
+                  <Text
+                    style={{
+                      color:
+                        props.item.LORY_CD === selectedItem?.LORY_CD
+                          ? Colors.WHITE
+                          : Colors.TEXT_COLOR,
+                    }}>
+                    QTY {props.item.BALQTY}
                   </Text>
                 </TouchableOpacity>
               ) : // memoizedRenderSearchSpecieCard(props)
@@ -172,6 +185,8 @@ const Search = ({navigation}: any) => {
                     marginTop: 5,
                     borderBottomWidth: 1,
                     borderBottomColor: Colors.GRAY_LIGHTEST,
+                    display: 'flex',
+                    flexDirection: 'row',
                     backgroundColor:
                       props.item.LORY_CD === selectedItem?.LORY_CD
                         ? Colors.PRIMARY
@@ -182,12 +197,22 @@ const Search = ({navigation}: any) => {
                   }}>
                   <Text
                     style={{
+                      flex: 3,
                       color:
                         props.item.LORY_CD === selectedItem?.LORY_CD
                           ? Colors.WHITE
                           : Colors.TEXT_COLOR,
                     }}>
                     {props.item.ITEM_NM} - {props.item.LORY_NO}
+                  </Text>
+                  <Text
+                    style={{
+                      color:
+                        props.item.LORY_CD === selectedItem?.LORY_CD
+                          ? Colors.WHITE
+                          : Colors.TEXT_COLOR,
+                    }}>
+                    QTY {props.item.BALQTY}
                   </Text>
                 </TouchableOpacity>
               ) : (

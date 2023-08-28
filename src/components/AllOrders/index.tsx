@@ -145,12 +145,13 @@ const AllOrders = ({navigation}: any) => {
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
-                  <SvgXml xml={noOrder} height={'400px'} width={'400px'} />
+                  <SvgXml xml={noOrder} height={'250px'} width={'250px'} />
                   <Text
                     style={{
                       fontFamily: Typography.FONT_FAMILY_EXTRA_BOLD,
                       fontSize: Typography.FONT_SIZE_27,
                       color: Colors.TEXT_COLOR,
+                      textAlign: 'center',
                     }}>
                     No Orders Found
                   </Text>
@@ -160,6 +161,7 @@ const AllOrders = ({navigation}: any) => {
                       fontSize: Typography.FONT_SIZE_18,
                       lineHeight: Typography.LINE_HEIGHT_24,
                       color: Colors.TEXT_COLOR,
+                      textAlign: 'center',
                     }}>
                     Looks like there aren't any orders for this day
                   </Text>

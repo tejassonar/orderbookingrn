@@ -59,6 +59,9 @@ export default function AppNavigator() {
           } else {
           }
         }
+      } else {
+        setIsLoggedIn(false);
+        setIsLoading(false);
       }
     } catch (error) {
       console.log(error);
