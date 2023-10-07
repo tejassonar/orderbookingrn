@@ -344,7 +344,7 @@ const OutlinedInput = React.forwardRef(
                     color: Colors.TEXT_COLOR,
                   },
                 ]}>
-                {value ?? i18next.t('label.select_dropdown_option')}
+                {value ?? ''}
               </Text>
             ) : (
               <TextInput {...inputProps} />

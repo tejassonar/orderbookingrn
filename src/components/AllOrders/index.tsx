@@ -20,6 +20,8 @@ import OutlinedInput from '../Common/OutlinedInput';
 import {SvgXml} from 'react-native-svg';
 import {noOrder} from '../../assets/noOrder';
 import OrderCard from './OrderCard';
+// import moment from 'moment';
+import moment from 'moment-timezone';
 
 const AllOrders = ({navigation}: any) => {
   const [orders, setOrders] = useState([]);
@@ -33,7 +35,7 @@ const AllOrders = ({navigation}: any) => {
   const [date, setDate] = useState(new Date());
   useEffect(() => {
     getOrders();
-  }, [date]);
+  }, [date, orderState]);
 
   async function getOrders() {
     const response = await getAuthenticatedRequest(`/orders?date=${date}`);
@@ -87,7 +89,8 @@ const AllOrders = ({navigation}: any) => {
                 }}
                 style={{marginVertical: 10}}>
                 <OutlinedInput
-                  value={date?.toDateString()}
+                  // value={date?.UTC()}
+                  value={moment(date).tz('Asia/Kolkata').format('ll')}
                   onChangeText={(text: string) => setDate(text)}
                   label={'Date'}
                   editable={false}
@@ -170,25 +173,21 @@ const AllOrders = ({navigation}: any) => {
             </View>
             {
               <DateTimePickerModal
-                headerTextIOS={`i18next.t(
-                  'label.inventory_overview_pick_a_date',
-                )`}
-                cancelTextIOS={`i18next.t('label.inventory_overview_cancel')`}
-                confirmTextIOS={`i18next.t('label.inventory_overview_confirm')`}
+                headerTextIOS={`Pick a Date`}
+                cancelTextIOS={`Cancel`}
+                confirmTextIOS={`Confirm`}
                 isVisible={showDate}
                 maximumDate={
                   new Date(new Date().setDate(new Date().getDate() + 1))
                 }
                 minimumDate={new Date(2006, 0, 1)}
                 testID="dateTimePicker"
-                timeZoneOffsetInMinutes={0}
+                timeZoneOffsetInMinutes={330}
                 date={new Date()}
                 mode={'date'}
                 is24Hour={true}
                 display="default"
                 onConfirm={date => {
-                  console.log(date, '===');
-
                   setShowDate(false);
                   setDate(date);
                 }}
@@ -253,15 +252,6 @@ const styles = StyleSheet.create({
     width: 30,
     height: 43,
     paddingBottom: 85,
-  },
-  markerText: {
-    width: 30,
-    height: 43,
-    color: Colors.WHITE,
-    fontWeight: 'bold',
-    fontSize: 16,
-    textAlign: 'center',
-    paddingTop: 4,
   },
   screenMargin: {
     marginHorizontal: 25,

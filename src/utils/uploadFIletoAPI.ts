@@ -1,5 +1,4 @@
 import DocumentPicker from 'react-native-document-picker';
-import {postAuthenticatedRequest, postRequest} from './api';
 import {APIConfig} from '../actions/config';
 
 export const uploadFileToAPI = async ({route, key, setUploading}: any) => {
@@ -7,7 +6,6 @@ export const uploadFileToAPI = async ({route, key, setUploading}: any) => {
   const res = await DocumentPicker.pick({
     type: ['text/csv', 'text/comma-separated-values'], // Provide which type of file you want user to pick
   });
-  console.log('res : ' + JSON.stringify(res));
   setUploading(true);
   let formdata = new FormData();
   formdata.append(key, res);

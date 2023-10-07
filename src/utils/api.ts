@@ -99,8 +99,6 @@ const request = async ({
       url,
     };
 
-    console.log(options, 'options');
-
     // if the method is either POST, PUT or DELETE and data is present then adds data property to options
     if (
       (method === 'POST' || method === 'PUT' || method === 'DELETE') &&
@@ -134,7 +132,6 @@ const request = async ({
       // adds Authorization to headers in options
       // let accessToken;
       AsyncStorage.getItem('User').then(async (user: any) => {
-        console.log(user, 'useruser', user.accessToken);
         const userObject = await JSON.parse(user);
         console.log(userObject.accessToken, '+==userObject.accessToken==+');
 
@@ -146,9 +143,6 @@ const request = async ({
         axiosInstance(options).then(resolve).catch(reject);
       });
       // const userObject = JSON.parse(user);
-      // console.log(userObject.accessToken, '==userObject.accessToken==');
-
-      // console.log(accessToken, 'accessToken');
 
       // returns a promise with axios instance
       // });

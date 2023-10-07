@@ -16,8 +16,6 @@ export const initializeOrder =
 export const addParty =
   ({partyCode, partyName, address, place}: any) =>
   (dispatch: React.Dispatch<any>) => {
-    console.log(partyCode, partyName, 'partyName');
-
     dispatch({
       type: ADD_PARTY,
       payload: {partyCode, partyName, address, place},

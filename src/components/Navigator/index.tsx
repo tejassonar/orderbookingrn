@@ -37,22 +37,14 @@ export default function AppNavigator() {
   const checkLogin = async () => {
     try {
       const user = await AsyncStorage.getItem('User');
-      console.log(user, 'Userrr');
 
       if (user !== null) {
         const userObject = await JSON.parse(user);
-        console.log(typeof userObject, 'userObject');
 
         if (userObject.accessToken) {
           // We have data!!
           const decodedToken = jwtDecode(userObject.accessToken);
-          console.log(decodedToken, 'decodedToken');
           if (jwtDecode(userObject.accessToken).exp > Date.now() / 1000) {
-            console.log(
-              jwtDecode(userObject.accessToken).exp,
-              Date.now() / 1000,
-              'Expiry',
-            );
             const user = await getAuthenticatedRequest('/users');
             updateUserDetails(user.data)(userDispatch);
             setIsLoggedIn(true);
@@ -73,7 +65,6 @@ export default function AppNavigator() {
   };
 
   const validateAccessToken = () => {};
-  console.log(isLoggedIn);
   return (
     <NavigationContainer>
       <StatusBar

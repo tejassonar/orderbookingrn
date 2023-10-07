@@ -54,7 +54,6 @@ const Search = ({navigation}: any) => {
     const items = await getAuthenticatedRequest('/items');
     setList(items.data);
     setShowSearchItems(false);
-    console.log(Object.keys(items), 'items');
   };
 
   const renderListHeader = React.useMemo(() => {

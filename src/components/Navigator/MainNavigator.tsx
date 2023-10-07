@@ -16,6 +16,11 @@ import {ItemDetails} from '../ItemDetails';
 import OrderReview from '../OrderReview';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AllOrders from '../AllOrders';
+import {EditItemDetails} from '../ItemDetails/EditItemDetails';
+import BillsPayment from '../BillsPayment';
+import UploadData from '../UploadData';
+import PaymentMethod from '../PaymentsMethod';
+import AllCollection from '../AllCollection';
 // import {} from '../';
 
 const Stack = createStackNavigator();
@@ -86,6 +91,11 @@ export default function MainNavigator(props: any) {
         options={MyTransition}
       />
       <Stack.Screen
+        name="EditItemDetails"
+        component={EditItemDetails}
+        options={MyTransition}
+      />
+      <Stack.Screen
         name="OrderReview"
         component={OrderReview}
         options={MyTransition}
@@ -93,6 +103,31 @@ export default function MainNavigator(props: any) {
       <Stack.Screen
         name="AllOrders"
         component={AllOrders}
+        options={MyTransition}
+      />
+      <Stack.Screen
+        name="BillsPayment"
+        component={BillsPayment}
+        options={MyTransition}
+      />
+      <Stack.Screen
+        name="PaymentMethod"
+        component={PaymentMethod}
+        options={MyTransition}
+      />
+      <Stack.Screen
+        name="AllCollection"
+        component={AllCollection}
+        options={MyTransition}
+      />
+      <Stack.Screen
+        name="CollectionOverview"
+        component={AllCollection}
+        options={MyTransition}
+      />
+      <Stack.Screen
+        name="UploadData"
+        component={UploadData}
         options={MyTransition}
       />
     </Stack.Navigator>

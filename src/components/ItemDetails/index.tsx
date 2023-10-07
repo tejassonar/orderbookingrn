@@ -33,7 +33,7 @@ export const ItemDetails = ({navigation, route}: any) => {
   const [heightError, setHeightError] = useState('');
   const [tagId, setTagId] = useState('');
   const [qty, setQty] = useState<any>(0);
-  const [countryCode, setCountryCode] = useState('');
+  const [invalidValuesModal, setInvalidValuesModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [tagIdError, setTagIdError] = useState('');
   const [skipAndAddModal, setSkipAndAddModal] = useState(false);
@@ -51,26 +51,14 @@ export const ItemDetails = ({navigation, route}: any) => {
   const diameterRef = React.createRef();
   const tagIdRef = React.createRef();
 
-  useEffect(() => {
-    console.log(orderState, 'orderState');
-  }, []);
-
   const checkQuantity = async () => {
     setHeightError('');
     const response = await getRequest(`/items/${route.params.itemCode}`);
-    console.log(
-      response,
-      response.data.balanceQuantity,
-      Number(height),
-      'response.balanceQuantity < Number(height)',
-    );
 
     if (response.data.balanceQuantity < Number(height)) {
       setHeightError(`Only ${response.data.balanceQuantity} QTY available!`);
     }
   };
-
-  console.log(heightError, 'heightError');
 
   const addItem = async () => {
     setIsDisabled(true);
@@ -86,24 +74,32 @@ export const ItemDetails = ({navigation, route}: any) => {
   };
 
   const onClickAddItem = () => {
-    if (heightError) {
-      setSkipAndAddModal(true);
+    if (!height || !diameter) {
+      setInvalidValuesModal(true);
     } else {
-      addItem();
-      navigation.navigate('ItemScreen');
+      if (heightError) {
+        setSkipAndAddModal(true);
+      } else {
+        addItem();
+        navigation.navigate('ItemScreen');
+      }
     }
   };
 
   const onClickOrderReview = () => {
-    if (heightError) {
-      if (orderState.length > 0) {
-        setSkipAndReviewModal(true);
-      } else {
-        setNoItemsModal(true);
-      }
+    if (!height || !diameter) {
+      setInvalidValuesModal(true);
     } else {
-      addItem();
-      navigation.navigate('OrderReview');
+      if (heightError) {
+        if (orderState.length > 0) {
+          setSkipAndReviewModal(true);
+        } else {
+          setNoItemsModal(true);
+        }
+      } else {
+        addItem();
+        navigation.navigate('OrderReview');
+      }
     }
   };
   return (
@@ -155,9 +151,6 @@ export const ItemDetails = ({navigation, route}: any) => {
                       value={diameter}
                       onChangeText={(text: string) => {
                         setDiameterError('');
-                        // setDiameter(
-                        //   text.replace(/,/g, '.').replace(/[^0-9.]/g, ''),
-                        // );
                         setDiameter(text);
                       }}
                       label={'Rate'}
@@ -166,45 +159,9 @@ export const ItemDetails = ({navigation, route}: any) => {
                       ref={diameterRef}
                       returnKeyType={'default'}
                       onSubmitEditing={() => tagIdRef.current.focus()}
-                      //   showInfo={true}
-                      //   infoText={'label.measurement_diameter_info'}
                     />
                   </View>
                 </View>
-
-                {/* <View style={styles.switchContainer}>
-                  <Text style={styles.switchText}>
-                    {'label.select_species_tagged_for_identification'}
-                  </Text>
-                  <Switch
-                    trackColor={{false: '#767577', true: '#d4e7b1'}}
-                    thumbColor={isTagIdPresent ? Colors.PRIMARY : '#f4f3f4'}
-                    ios_backgroundColor="#3e3e3e"
-                    onValueChange={() => setIsTagIdPresent(!isTagIdPresent)}
-                    value={isTagIdPresent}
-                  />
-                </View> */}
-
-                {/* {isTagIdPresent ? (
-                  <>
-                    <View style={styles.inputBox}>
-                      <View>
-                        <OutlinedInput
-                          value={tagId}
-                          label={'Note'}
-                          onChangeText={(text: string) => {
-                            setTagIdError('');
-                            setTagId(text);
-                          }}
-                          error={tagIdError}
-                          ref={tagIdRef}
-                        />
-                      </View>
-                    </View>
-                  </>
-                ) : (
-                  []
-                )} */}
               </View>
 
               <View style={styles.bottomBtnsContainer}>
@@ -268,6 +225,15 @@ export const ItemDetails = ({navigation, route}: any) => {
 
             setNoItemsModal(false);
             navigation.navigate('MainScreen');
+          }}
+        />
+        <AlertModal
+          visible={invalidValuesModal}
+          heading={'Oops, Invalid values'}
+          message={`Both Quantity and Price are Mandatory!`}
+          primaryBtnText={'Ok'}
+          onPressPrimaryBtn={() => {
+            setInvalidValuesModal(false);
           }}
         />
       </SafeAreaView>

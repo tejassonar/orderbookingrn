@@ -19,7 +19,7 @@ import {OrderDetailsContext} from '../../reducers/orderDetails';
 import {addParty} from '../../actions/orderDetails';
 import AlertModal from '../Common/AlertModal';
 
-const Search = ({navigation}: any) => {
+const Search = ({navigation, ...props}: any) => {
   const [searchText, setSearchText] = useState('');
   const [list, setList] = useState([]);
   const [searchList, setSearchList] = useState([]);
@@ -53,17 +53,16 @@ const Search = ({navigation}: any) => {
   const getAllParties = async () => {
     try {
       const parties = await getAuthenticatedRequest('/parties');
-      // console.log(parties.data, '=====');
       setList(parties.data);
-      // console.log(Object.keys(parties), 'parties');
     } catch (err) {
       console.log(err, 'Error');
     }
-    console.log(orderDetailsState, 'orderDetailsState');
 
     setShowSearchParties(false);
   };
 
+  console.log(navigation, 'navigation');
+  console.log(props.route.params);
   const renderListHeader = React.useMemo(() => {
     return (
       <>
@@ -114,7 +113,7 @@ const Search = ({navigation}: any) => {
     );
   }, [searchText]);
 
-  const onPressContinue = () => {
+  const continueOrder = () => {
     if (selectedParty.PARTY_CD) {
       addParty({
         partyCode: selectedParty.PARTY_CD,
@@ -124,6 +123,17 @@ const Search = ({navigation}: any) => {
       })(dispatch);
 
       navigation.navigate('ItemScreen');
+    } else {
+      setNoPartyModal(true);
+    }
+  };
+
+  const continueBillsPayment = () => {
+    if (selectedParty.PARTY_CD) {
+      navigation.navigate('BillsPayment', {
+        partyCode: selectedParty.PARTY_CD,
+        partyName: selectedParty.PARTY_NM,
+      });
     } else {
       setNoPartyModal(true);
     }
@@ -141,34 +151,34 @@ const Search = ({navigation}: any) => {
         contentContainerStyle={{}}
         renderItem={(props: any) => {
           return (
-            <View style={[styles.container, {marginTop: 5}]}>
+            <View style={[styles.container]}>
               {showSearchParties &&
               searchList &&
               searchList.length > 0 &&
               searchText.length > 2 ? (
                 <TouchableOpacity
                   style={{
-                    paddingVertical: 10,
+                    paddingVertical: 16,
                     paddingHorizontal: 8,
-                    marginTop: 5,
+                    marginTop: 4,
                     borderBottomWidth: 1,
-                    borderBottomColor: Colors.GRAY_LIGHTEST,
-                    backgroundColor:
-                      props.item.PARTY_CD === selectedParty?.PARTY_CD
+                    borderWidth:
+                      props.item.PARTY_CD === selectedParty.PARTY_CD ? 2 : 1,
+                    borderColor:
+                      props.item.PARTY_CD === selectedParty.PARTY_CD
                         ? Colors.PRIMARY
-                        : 'white',
+                        : '#dedede',
+                    borderRadius: 10,
+                    backgroundColor: Colors.WHITE,
                   }}
                   onPress={() => {
-                    console.log(props.item.PARTY_CD);
-
                     setSelectedParty(props.item);
                   }}>
                   <Text
                     style={{
-                      color:
-                        props.item.PARTY_CD === selectedParty.PARTY_CD
-                          ? Colors.WHITE
-                          : Colors.TEXT_COLOR,
+                      fontFamily: Typography.FONT_FAMILY_SEMI_BOLD,
+                      fontSize: Typography.FONT_SIZE_14,
+                      color: Colors.TEXT_COLOR,
                     }}>
                     {props.item.PARTY_NM}{' '}
                     {props.item.PLACE || props.item.ADD1 ? '-' : ' '}{' '}
@@ -180,26 +190,27 @@ const Search = ({navigation}: any) => {
               !showSearchParties ? (
                 <TouchableOpacity
                   style={{
-                    paddingVertical: 10,
+                    paddingVertical: 16,
                     paddingHorizontal: 8,
-                    marginTop: 5,
+                    marginTop: 4,
                     borderBottomWidth: 1,
-                    borderBottomColor: Colors.GRAY_LIGHTEST,
-                    backgroundColor:
+                    borderWidth:
+                      props.item.PARTY_CD === selectedParty.PARTY_CD ? 2 : 1,
+                    borderColor:
                       props.item.PARTY_CD === selectedParty.PARTY_CD
                         ? Colors.PRIMARY
-                        : 'white',
+                        : '#dedede',
+                    borderRadius: 10,
+                    backgroundColor: Colors.WHITE,
                   }}
                   onPress={() => {
-                    console.log(props.item.PARTY_CD);
                     setSelectedParty(props.item);
                   }}>
                   <Text
                     style={{
-                      color:
-                        props.item.PARTY_CD === selectedParty.PARTY_CD
-                          ? Colors.WHITE
-                          : Colors.TEXT_COLOR,
+                      fontFamily: Typography.FONT_FAMILY_SEMI_BOLD,
+                      fontSize: Typography.FONT_SIZE_14,
+                      color: Colors.TEXT_COLOR,
                     }}>
                     {props.item.PARTY_NM}{' '}
                     {props.item.PLACE || props.item.ADD1 ? '-' : ' '}
@@ -217,13 +228,17 @@ const Search = ({navigation}: any) => {
       />
       <PrimaryButton
         btnText="Continue"
-        onPress={onPressContinue}
+        onPress={
+          props.route.params?.isBillsPayment
+            ? continueBillsPayment
+            : continueOrder
+        }
         disabled={selectedParty ? false : true}
       />
       <AlertModal
         visible={noPartyModal}
         heading={'No Party selected'}
-        message={`Please select an Item to continue`}
+        message={`Please select a Party to continue`}
         primaryBtnText={'Sure'}
         onPressPrimaryBtn={() => {
           setNoPartyModal(false);
@@ -248,9 +263,12 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
+    width: '98%',
+    alignSelf: 'center',
     height: 48,
     borderRadius: 5,
     marginTop: 24,
+    marginBottom: 12,
     backgroundColor: Colors.WHITE,
     shadowColor: '#000000',
     shadowOffset: {

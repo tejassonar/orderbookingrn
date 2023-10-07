@@ -39,8 +39,6 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? 'yellow' : 'green',
   };
 
-  console.log('App');
-
   return (
     <Provider>
       <PaperProvider>

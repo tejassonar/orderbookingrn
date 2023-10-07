@@ -46,10 +46,7 @@ const LoginScreen = ({navigation}: any) => {
       updateUserDetails(data)(userDispatch);
       setLoading(false);
       navigation.navigate('MainScreen');
-
-      console.log('Login successful');
     }
-    console.log('Loading false');
   };
 
   return (
@@ -98,7 +95,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 24,
+    fontSize: Typography.FONT_SIZE_27,
     fontWeight: 'bold',
     marginVertical: 32,
     fontFamily: Typography.FONT_FAMILY_REGULAR,
@@ -124,7 +121,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: Typography.FONT_SIZE_18,
     fontWeight: 'bold',
     textAlign: 'center',
   },

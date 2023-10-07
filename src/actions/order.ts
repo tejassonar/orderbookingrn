@@ -3,6 +3,7 @@ import {
   EMPTY_ORDER_STORE,
   REMOVE_ITEM_FROM_ORDER,
   ADD_BULK_ITEMS_TO_ORDER,
+  EDIT_ITEM_IN_ORDER,
 } from './types';
 
 export const addItemToOrder =
@@ -15,18 +16,24 @@ export const addItemToOrder =
 
 export const addBulkItemsToOrder =
   (itemData: any) => (dispatch: React.Dispatch<any>) => {
-    console.log(itemData, 'itemData');
     dispatch({
       type: ADD_BULK_ITEMS_TO_ORDER,
       payload: itemData,
     });
   };
+export const editItemInOrder =
+  (itemData: any) => (dispatch: React.Dispatch<any>) => {
+    dispatch({
+      type: EDIT_ITEM_IN_ORDER,
+      payload: itemData,
+    });
+  };
 
 export const removeItemFromOrder =
-  (itemCode: any) => (dispatch: React.Dispatch<any>) => {
+  (deleteItemId: any) => (dispatch: React.Dispatch<any>) => {
     dispatch({
       type: REMOVE_ITEM_FROM_ORDER,
-      payload: itemCode,
+      payload: {deleteItemId},
     });
   };
 
