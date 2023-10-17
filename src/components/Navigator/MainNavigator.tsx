@@ -14,7 +14,6 @@ import PartyScreen from '../PartyScreen';
 import ItemScreen from '../ItemScreen';
 import {ItemDetails} from '../ItemDetails';
 import OrderReview from '../OrderReview';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AllOrders from '../AllOrders';
 import {EditItemDetails} from '../ItemDetails/EditItemDetails';
 import BillsPayment from '../BillsPayment';

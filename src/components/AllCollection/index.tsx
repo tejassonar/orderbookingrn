@@ -18,6 +18,7 @@ import {getAuthenticatedRequest} from '../../utils/api';
 import {Cell, Row, Table, TableWrapper} from 'react-native-table-component';
 import DropDown from '../Common/DropDown';
 import {formatDate} from '../../utils/formatDate';
+import SharePDFReport from './SharePDFReport';
 
 const AllCollection = ({navigation}: any) => {
   const [date, setDate] = useState(new Date());
@@ -62,6 +63,7 @@ const AllCollection = ({navigation}: any) => {
       disabled: false,
     },
   ];
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.container}>
@@ -144,6 +146,17 @@ const AllCollection = ({navigation}: any) => {
                   <View style={{marginTop: 20}}>
                     {payment.BILLS && (
                       <View style={styles.cardContainer}>
+                        <SharePDFReport
+                          PARTY_NM={payment.PARTY_NM}
+                          PARTY_CD={payment.PARTY_CD}
+                          BILL_DT={formatDate(payment.BILL_DT)}
+                          PAYMENT_TYPE={
+                            payment.PAYMENT_TYPE.charAt(0).toUpperCase() +
+                            payment.PAYMENT_TYPE.slice(1)
+                          }
+                          TOTAL={payment.TOTAL}
+                          BILLS={payment.BILLS}
+                        />
                         <Text style={styles.title}>{payment.PARTY_NM}</Text>
                         <Text style={styles.cardText}>
                           Party Code: {payment.PARTY_CD}
@@ -178,9 +191,7 @@ const AllCollection = ({navigation}: any) => {
                           {payment.BILLS.map((rowData, index) => {
                             const itemData = [
                               `${rowData.DOC_NO}`,
-                              new Date(rowData.DOC_DT)
-                                .toISOString()
-                                .split('T')[0],
+                              formatDate(rowData.DOC_DT),
                               `${rowData.PND_AMT} (${rowData.BIL_AMT})`,
                               `${rowData.RCV_AMT}`,
                             ];

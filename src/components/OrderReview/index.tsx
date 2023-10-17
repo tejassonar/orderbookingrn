@@ -39,15 +39,15 @@ const OrderReview = ({navigation, route}: any) => {
   const saveOrder = async () => {
     console.log(orderState, 'orderState');
 
-    // try {
-    //   const response = await postRequest('/orders', {orders: orderState});
-    //   emptyOrderStore()(orderDispatch);
-    //   emptyOrderDetails()(orderDetailsDispatch);
+    try {
+      const response = await postRequest('/orders', {orders: orderState});
+      emptyOrderStore()(orderDispatch);
+      emptyOrderDetails()(orderDetailsDispatch);
 
-    //   navigation.navigate('MainScreen');
-    // } catch (err) {
-    //   console.log(err);
-    // }
+      navigation.navigate('MainScreen');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const deleteOrder = async () => {

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
+  Pressable,
 } from 'react-native';
 import {Colors, Typography} from '../../styles';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -17,6 +18,7 @@ import useDebounce from '../../hooks/useDebounce';
 import PrimaryButton from '../Common/PrimaryButton';
 import {OrderDetailsContext} from '../../reducers/orderDetails';
 import AlertModal from '../Common/AlertModal';
+import {OrderContext} from '../../reducers/order';
 
 const Search = ({navigation}: any) => {
   const [searchText, setSearchText] = useState('');
@@ -26,6 +28,7 @@ const Search = ({navigation}: any) => {
   const [noItemModal, setNoItemModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState({});
   const {state: orderDetailsState, dispatch} = useContext(OrderDetailsContext);
+  const {state: orderState, dispatch: orderDispatch} = useContext(OrderContext);
 
   const debouncedSearch = useDebounce(searchText, 700);
 
@@ -117,6 +120,7 @@ const Search = ({navigation}: any) => {
       setNoItemModal(true);
     }
   };
+  console.log(orderState.length, 'orderState.length');
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -140,17 +144,20 @@ const Search = ({navigation}: any) => {
               searchText.length > 2 ? (
                 <TouchableOpacity
                   style={{
-                    paddingVertical: 10,
+                    paddingVertical: 16,
                     paddingHorizontal: 8,
-                    marginTop: 5,
-                    display: 'flex',
-                    flexDirection: 'row',
+                    marginTop: 4,
                     borderBottomWidth: 1,
-                    borderBottomColor: Colors.GRAY_LIGHTEST,
-                    backgroundColor:
+                    borderWidth:
+                      props.item.LORY_CD === selectedItem?.LORY_CD ? 2 : 1,
+                    borderColor:
                       props.item.LORY_CD === selectedItem?.LORY_CD
                         ? Colors.PRIMARY
-                        : 'white',
+                        : '#dedede',
+                    borderRadius: 10,
+                    backgroundColor: Colors.WHITE,
+                    display: 'flex',
+                    flexDirection: 'row',
                   }}
                   onPress={() => {
                     setSelectedItem(props.item);
@@ -158,19 +165,18 @@ const Search = ({navigation}: any) => {
                   <Text
                     style={{
                       flex: 3,
-                      color:
-                        props.item.LORY_CD === selectedItem?.LORY_CD
-                          ? Colors.WHITE
-                          : Colors.TEXT_COLOR,
+                      fontFamily: Typography.FONT_FAMILY_SEMI_BOLD,
+                      fontSize: Typography.FONT_SIZE_14,
+                      color: Colors.TEXT_COLOR,
                     }}>
                     {props.item.ITEM_NM} - {props.item.LORY_NO}
                   </Text>
                   <Text
                     style={{
-                      color:
-                        props.item.LORY_CD === selectedItem?.LORY_CD
-                          ? Colors.WHITE
-                          : Colors.TEXT_COLOR,
+                      fontFamily: Typography.FONT_FAMILY_SEMI_BOLD,
+                      fontSize: Typography.FONT_SIZE_14,
+                      color: Colors.TEXT_COLOR,
+                      paddingRight: 10,
                     }}>
                     QTY {props.item.BALQTY}
                   </Text>
@@ -179,17 +185,20 @@ const Search = ({navigation}: any) => {
               !showSearchItems ? (
                 <TouchableOpacity
                   style={{
-                    paddingVertical: 10,
+                    paddingVertical: 16,
                     paddingHorizontal: 8,
-                    marginTop: 5,
+                    marginTop: 4,
                     borderBottomWidth: 1,
-                    borderBottomColor: Colors.GRAY_LIGHTEST,
-                    display: 'flex',
-                    flexDirection: 'row',
-                    backgroundColor:
+                    borderWidth:
+                      props.item.LORY_CD === selectedItem?.LORY_CD ? 2 : 1,
+                    borderColor:
                       props.item.LORY_CD === selectedItem?.LORY_CD
                         ? Colors.PRIMARY
-                        : 'white',
+                        : '#dedede',
+                    borderRadius: 10,
+                    backgroundColor: Colors.WHITE,
+                    display: 'flex',
+                    flexDirection: 'row',
                   }}
                   onPress={() => {
                     setSelectedItem(props.item);
@@ -197,19 +206,18 @@ const Search = ({navigation}: any) => {
                   <Text
                     style={{
                       flex: 3,
-                      color:
-                        props.item.LORY_CD === selectedItem?.LORY_CD
-                          ? Colors.WHITE
-                          : Colors.TEXT_COLOR,
+                      fontFamily: Typography.FONT_FAMILY_SEMI_BOLD,
+                      fontSize: Typography.FONT_SIZE_14,
+                      color: Colors.TEXT_COLOR,
                     }}>
                     {props.item.ITEM_NM} - {props.item.LORY_NO}
                   </Text>
                   <Text
                     style={{
-                      color:
-                        props.item.LORY_CD === selectedItem?.LORY_CD
-                          ? Colors.WHITE
-                          : Colors.TEXT_COLOR,
+                      fontFamily: Typography.FONT_FAMILY_SEMI_BOLD,
+                      fontSize: Typography.FONT_SIZE_14,
+                      color: Colors.TEXT_COLOR,
+                      paddingRight: 10,
                     }}>
                     QTY {props.item.BALQTY}
                   </Text>
@@ -222,6 +230,26 @@ const Search = ({navigation}: any) => {
           );
         }}
       />
+      {orderState.length ? (
+        <View style={styles.floatingButton}>
+          <Text
+            style={{
+              fontFamily: Typography.FONT_FAMILY_SEMI_BOLD,
+              fontSize: Typography.FONT_SIZE_16,
+              color: Colors.TEXT_COLOR,
+            }}>
+            {orderState.length} Items added
+          </Text>
+          <Pressable
+            onPress={() => {
+              navigation.navigate('OrderReview');
+            }}>
+            <Text style={styles.viewOrder}>View Order</Text>
+          </Pressable>
+        </View>
+      ) : (
+        []
+      )}
       <PrimaryButton
         btnText="Continue"
         onPress={onPressContinue}
@@ -279,6 +307,37 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     flex: 1,
     color: Colors.BLACK,
+  },
+  viewOrder: {
+    backgroundColor: Colors.PRIMARY,
+    color: Colors.WHITE,
+    fontFamily: Typography.FONT_FAMILY_SEMI_BOLD,
+    fontSize: Typography.FONT_SIZE_16,
+    padding: 10,
+    borderRadius: 5,
+    left: 10,
+  },
+  floatingButton: {
+    backgroundColor: 'white',
+    width: '100%',
+    height: 60,
+    marginBottom: 15,
+    borderRadius: 5,
+    // borderWidth: 1,
+    // borderColor: Colors.PRIMARY,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+    shadowColor: Colors.PRIMARY,
+    shadowOffset: {
+      width: -2,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
+    elevation: 8,
+    shadowColor: Colors.PRIMARY,
   },
   specieListItem: {
     paddingVertical: 20,

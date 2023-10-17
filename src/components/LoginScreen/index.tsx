@@ -10,7 +10,6 @@ import {
 import {Colors, Typography} from '../../styles';
 import {SvgXml} from 'react-native-svg';
 import {businessman} from '../../assets/businessman';
-import {postRequest} from '../../utils/api';
 import {ActivityIndicator} from 'react-native';
 import {login} from '../../utils/login';
 import {updateUserDetails} from '../../actions/user';
@@ -51,9 +50,7 @@ const LoginScreen = ({navigation}: any) => {
 
   return (
     <View style={styles.container}>
-      <Text style={{paddingBottom: 50, color: Colors.TEXT_COLOR}}>
-        Soft-Touch Order-Booking App
-      </Text>
+      <Text style={styles.appTitle}>Soft-Touch Order-Booking App</Text>
       <SvgXml xml={businessman} height={'200px'} />
       <Text style={styles.title}>Login</Text>
       <TextInput
@@ -94,9 +91,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  appTitle: {
+    paddingBottom: 50,
+    color: Colors.TEXT_COLOR,
+    fontFamily: Typography.FONT_FAMILY_REGULAR,
+  },
   title: {
     fontSize: Typography.FONT_SIZE_27,
-    fontWeight: 'bold',
     marginVertical: 32,
     fontFamily: Typography.FONT_FAMILY_REGULAR,
     color: Colors.TEXT_COLOR,
@@ -109,6 +110,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     width: '80%',
     color: Colors.TEXT_COLOR,
+    fontFamily: Typography.FONT_FAMILY_REGULAR,
     fontSize: Typography.FONT_SIZE_18,
   },
   button: {
@@ -122,7 +124,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: Typography.FONT_SIZE_18,
-    fontWeight: 'bold',
+    fontFamily: Typography.FONT_FAMILY_BOLD,
     textAlign: 'center',
   },
 });

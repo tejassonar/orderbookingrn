@@ -201,7 +201,7 @@ const PaymentMethod = ({navigation, route}: {navigation: any; route: any}) => {
         cancelTextIOS={`Cancel`}
         confirmTextIOS={`Confirm`}
         isVisible={showDate}
-        maximumDate={new Date(new Date().setDate(new Date().getDate() + 1))}
+        // maximumDate={new Date(new Date().setDate(new Date().getDate() + 1))}
         minimumDate={new Date(2006, 0, 1)}
         testID="dateTimePicker"
         timeZoneOffsetInMinutes={330}

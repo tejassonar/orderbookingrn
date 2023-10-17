@@ -1,4 +1,3 @@
-import {useNavigation} from '@react-navigation/native';
 import React, {useContext, useState} from 'react';
 import {
   Alert,
@@ -43,7 +42,7 @@ const MainScreen = ({navigation}: any) => {
     // console.log(userState, 'userState');
     const orderData = {
       USER_ID: '1234',
-      ORD_DT: new Date(),
+      ORD_DT: new Date().toString(),
       ORD_NO: nanoid(5),
       COMP_CD: userState.COMP_CD,
       CLIENT_CD: userState.CLIENT_CD,
@@ -66,7 +65,7 @@ const MainScreen = ({navigation}: any) => {
         setUploading: setItemsUploading,
       });
 
-      if (response.status == 200) {
+      if (response.status === 200) {
         Alert.alert('Upload Successful');
       }
       // const response = await postAuthenticatedRequest('/parties/bulk', data, {
@@ -96,7 +95,7 @@ const MainScreen = ({navigation}: any) => {
         setUploading: setPartiesUploading,
       });
 
-      if (response.status == 200) {
+      if (response.status === 200) {
         Alert.alert('Upload Successful');
       }
       // const response = await postAuthenticatedRequest('/parties/bulk', data, {
@@ -125,7 +124,7 @@ const MainScreen = ({navigation}: any) => {
         setUploading: setBillsUploading,
       });
 
-      if (response.status == 200) {
+      if (response.status === 200) {
         Alert.alert('Upload Successful');
       }
       // const response = await postAuthenticatedRequest('/parties/bulk', data, {
