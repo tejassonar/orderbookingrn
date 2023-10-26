@@ -42,7 +42,7 @@ const MainScreen = ({navigation}: any) => {
     // console.log(userState, 'userState');
     const orderData = {
       USER_ID: '1234',
-      ORD_DT: new Date().toString(),
+      ORD_DT: new Date().toDateString(),
       ORD_NO: nanoid(5),
       COMP_CD: userState.COMP_CD,
       CLIENT_CD: userState.CLIENT_CD,

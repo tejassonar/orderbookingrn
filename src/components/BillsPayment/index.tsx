@@ -18,6 +18,7 @@ import {BillPaymentContext} from '../../reducers/billPayments';
 import {initiateBillPayment} from '../../actions/billPayments';
 import {nanoid} from 'nanoid';
 import {UserContext} from '../../reducers/user';
+import {formatDate} from '../../utils/formatDate';
 
 const BillsPayment = ({navigation, route}: any) => {
   const [deleteItemId, setDeleteItemId] = useState('');
@@ -158,7 +159,8 @@ const BillsPayment = ({navigation, route}: any) => {
                       const itemData = [
                         '',
                         `${rowData.DOC_NO}`,
-                        new Date(rowData.DOC_DT).toISOString().split('T')[0],
+                        // new Date(rowData.DOC_DT).toISOString().split('T')[0],
+                        formatDate(rowData.DOC_DT),
                         `${rowData.PND_AMT} (${rowData.BIL_AMT})`,
                         `${rowData.BIL_AMT}`,
                       ];
