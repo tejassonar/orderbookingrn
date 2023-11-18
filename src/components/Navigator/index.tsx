@@ -2,7 +2,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useNetInfo} from '@react-native-community/netinfo';
 import React, {useEffect, useContext, useState} from 'react';
-import {StatusBar, Platform, Text, View} from 'react-native';
+import {StatusBar, Platform, Text, View, Alert} from 'react-native';
 import {Colors} from '../../styles';
 import MainNavigator from './MainNavigator';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -11,6 +11,7 @@ import jwtDecode from 'jwt-decode';
 import {getAuthenticatedRequest} from '../../utils/api';
 import {UserContext} from '../../reducers/user';
 import {updateUserDetails} from '../../actions/user';
+import BottomTabs from './BottomNavigator';
 
 const Stack = createNativeStackNavigator();
 const isAndroid = Platform.OS === 'android';
@@ -37,18 +38,24 @@ export default function AppNavigator() {
   const checkLogin = async () => {
     try {
       const user = await AsyncStorage.getItem('User');
+      console.log(user, 'user');
 
       if (user !== null) {
         const userObject = await JSON.parse(user);
+        console.log(userObject, 'userObject');
 
         if (userObject.accessToken) {
           // We have data!!
+
           const decodedToken = jwtDecode(userObject.accessToken);
           if (jwtDecode(userObject.accessToken).exp > Date.now() / 1000) {
             const user = await getAuthenticatedRequest('/users');
             updateUserDetails(user.data)(userDispatch);
             setIsLoggedIn(true);
           } else {
+            console.log('expired');
+
+            setIsLoading(false);
           }
         }
       } else {
@@ -57,6 +64,7 @@ export default function AppNavigator() {
       }
     } catch (error) {
       console.log(error);
+      Alert.alert('Something went wrong. Please contact admin!');
       // Error retrieving data
     } finally {
       // Whether the token retrieval is successful or not, mark loading as complete
@@ -86,12 +94,19 @@ export default function AppNavigator() {
             headerShown: false,
           }}>
           <Stack.Screen
+            name="BottomNavigator"
+            component={BottomTabs}
+            // headerShown={false}
+            // initialParams={{isLoggedIn}}
+          />
+          <Stack.Screen
             name="MainNavigator"
             component={MainNavigator}
             initialParams={{isLoggedIn}}
           />
         </Stack.Navigator>
       )}
+      {/* <BottomTabs /> */}
     </NavigationContainer>
   );
 }

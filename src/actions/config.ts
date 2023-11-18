@@ -5,7 +5,7 @@ let APIConfig = {
   // url: 'pear-precious-mussel.cyclic.app/api/',
   // url: 'orderbooking-backend-zg4d.onrender.com/api/',
   protocol: 'http',
-  url: '192.168.238.223:8000/api/',
+  url: '192.168.100.3:8000/api/',
 };
 
 export {APIConfig};

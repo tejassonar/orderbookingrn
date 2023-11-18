@@ -25,6 +25,7 @@ import {upload} from '../../assets/upload';
 import {billPayemnts} from '../../assets/billPayments';
 import Header from '../Common/Header';
 import avatar from '../../assets/avatar.png';
+import BottomBar from './BottomBar';
 // import {customAlphabet} from 'nanoid/non-secure';
 const MainScreen = ({navigation}: any) => {
   const [partiesUploading, setPartiesUploading] = useState(false);
@@ -211,6 +212,11 @@ const MainScreen = ({navigation}: any) => {
           []
         )}
       </View>
+      <BottomBar
+        onMenuPress={() => {}}
+        onTreeInventoryPress={() => {}}
+        numberOfInventory={3}
+      />
     </SafeAreaView>
   );
 };
