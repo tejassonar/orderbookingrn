@@ -4,6 +4,8 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Text,
+  Pressable,
 } from 'react-native';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import Header from '../Common/Header';
@@ -18,6 +20,7 @@ import {emptyOrderStore, removeItemFromOrder} from '../../actions/order';
 import {emptyOrderDetails} from '../../actions/orderDetails';
 import {Table, Row, TableWrapper, Cell} from 'react-native-table-component';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import SimpleModal from '../Common/Modal';
 
 const OrderReview = ({navigation, route}: any) => {
   const {state: orderDetailsState, dispatch: orderDetailsDispatch} =
@@ -87,7 +90,7 @@ const OrderReview = ({navigation, route}: any) => {
   };
 
   console.log(orderState, 'orderState');
-
+  console.log(orderDetailsState, 'orderDetailsState');
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.container}>
@@ -117,7 +120,9 @@ const OrderReview = ({navigation, route}: any) => {
                 />
                 <Label
                   leftText={'Party Name'}
-                  rightText={orderDetailsState.PARTY_NM}
+                  rightText={`${orderDetailsState.PARTY_NM} (${
+                    orderDetailsState.REMARK ?? ''
+                  })`}
                   onPressRightText={() => console.log('Pressed')}
                   rightTextStyle={{color: Colors.TEXT_COLOR}}
                 />
@@ -130,7 +135,21 @@ const OrderReview = ({navigation, route}: any) => {
                   rightTextStyle={{color: Colors.TEXT_COLOR}}
                 />
               </View>
-
+              {/* <Pressable
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                }}
+                onPress={() => {
+                  console.log('Pressed');
+                }}>
+                <Text style={{color: Colors.PRIMARY, marginRight: 10}}>
+                  Add Note
+                </Text>
+                <MaterialIcon name="note" size={25} color={Colors.PRIMARY} />
+              </Pressable> */}
               <View style={{marginTop: 20}}>
                 {orderState && (
                   <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
@@ -189,6 +208,10 @@ const OrderReview = ({navigation, route}: any) => {
                 />
               </View>
             )}
+            {/* <SimpleModal visible={true}>
+              <Text style={{}}>'ljasdnfljdaflj</Text>
+              <Text style={{}}>aksnflkasnflkasnf</Text>
+            </SimpleModal> */}
           </View>
         ) : null}
       </View>

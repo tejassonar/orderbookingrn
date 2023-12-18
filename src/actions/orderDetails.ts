@@ -3,6 +3,7 @@ import {
   EMPTY_ORDER_DETAILS,
   INITIALIZE_ORDER,
   ADD_ORDER_DETAILS,
+  ADD_REMARK,
 } from './types';
 
 export const initializeOrder =
@@ -14,19 +15,20 @@ export const initializeOrder =
   };
 
 export const addParty =
-  ({partyCode, partyName, address, place}: any) =>
+  ({partyCode, partyName, address, place, remark}: any) =>
   (dispatch: React.Dispatch<any>) => {
     dispatch({
       type: ADD_PARTY,
-      payload: {partyCode, partyName, address, place},
+      payload: {partyCode, partyName, address, place, remark},
     });
   };
 
 export const addRemark =
-  (partyCode: any) => (dispatch: React.Dispatch<any>) => {
+  ({partyCode, remark}: any) =>
+  (dispatch: React.Dispatch<any>) => {
     dispatch({
-      type: INITIALIZE_ORDER,
-      payload: partyCode,
+      type: ADD_REMARK,
+      payload: {partyCode, remark},
     });
   };
 

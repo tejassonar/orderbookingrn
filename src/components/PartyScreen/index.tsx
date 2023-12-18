@@ -18,6 +18,8 @@ import PrimaryButton from '../Common/PrimaryButton';
 import {OrderDetailsContext} from '../../reducers/orderDetails';
 import {addParty} from '../../actions/orderDetails';
 import AlertModal from '../Common/AlertModal';
+import SimpleModal from '../Common/Modal';
+import OutlinedInput from '../Common/OutlinedInput';
 
 const Search = ({navigation, ...props}: any) => {
   const [searchText, setSearchText] = useState('');
@@ -26,6 +28,8 @@ const Search = ({navigation, ...props}: any) => {
   const [showSearchParties, setShowSearchParties] = useState(false);
   const [selectedParty, setSelectedParty] = useState({});
   const [noPartyModal, setNoPartyModal] = useState(false);
+  const [showAddCashNote, setShowAddCashNote] = useState(false);
+  const [note, setNote] = useState(``);
   const {state: orderDetailsState, dispatch} = useContext(OrderDetailsContext);
 
   const debouncedSearch = useDebounce(searchText, 700);
@@ -47,6 +51,7 @@ const Search = ({navigation, ...props}: any) => {
     const searchedParties = await getAuthenticatedRequest(
       `/parties/search/?name=${searchText}`,
     );
+
     setSearchList(searchedParties.data);
   };
 
@@ -113,13 +118,14 @@ const Search = ({navigation, ...props}: any) => {
     );
   }, [searchText]);
 
-  const continueOrder = () => {
+  const continueOrder = async ({remark}: {remark?: string}) => {
     if (selectedParty.PARTY_CD) {
-      addParty({
+      await addParty({
         partyCode: selectedParty.PARTY_CD,
         partyName: selectedParty.PARTY_NM,
         address: selectedParty.ADD1,
         place: selectedParty.PLACE,
+        remark: remark ?? '',
       })(dispatch);
 
       navigation.navigate('ItemScreen');
@@ -145,7 +151,7 @@ const Search = ({navigation, ...props}: any) => {
         style={{flex: 1}}
         data={showSearchParties ? searchList : list}
         showsVerticalScrollIndicator={false}
-        keyExtractor={item => item?.PARTY_CD}
+        keyExtractor={(item, index) => index}
         keyboardShouldPersistTaps="always"
         ListHeaderComponent={renderListHeader}
         contentContainerStyle={{}}
@@ -231,10 +237,58 @@ const Search = ({navigation, ...props}: any) => {
         onPress={
           props.route.params?.isBillsPayment
             ? continueBillsPayment
+            : selectedParty.PARTY_NM == 'CASH'
+            ? () => {
+                setShowAddCashNote(true);
+              }
             : continueOrder
         }
         disabled={selectedParty ? false : true}
       />
+      <SimpleModal visible={showAddCashNote} key={'cashNote'}>
+        <Text
+          style={{
+            fontFamily: Typography.FONT_FAMILY_BOLD,
+            fontSize: Typography.FONT_SIZE_20,
+            lineHeight: Typography.LINE_HEIGHT_24,
+            color: Colors.BLACK,
+          }}>
+          Add a Cash Note
+        </Text>
+        <OutlinedInput
+          onChangeText={(text: string) => {
+            setNote(text);
+          }}
+          style={{marginTop: 20}}
+          label={'Cash Note'}
+        />
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+          }}>
+          <PrimaryButton
+            style={{marginTop: 20}}
+            btnText="cancel"
+            theme={'white'}
+            halfWidth={true}
+            onPress={() => {
+              setShowAddCashNote(false);
+            }}
+          />
+          <PrimaryButton
+            style={{marginTop: 20}}
+            btnText="Continue"
+            halfWidth={true}
+            onPress={() => {
+              console.log(note, 'note1');
+
+              continueOrder({remark: note});
+            }}
+          />
+        </View>
+      </SimpleModal>
       <AlertModal
         visible={noPartyModal}
         heading={'No Party selected'}
