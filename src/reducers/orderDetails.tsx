@@ -51,6 +51,7 @@ const OrderDetailsReducer = (state = initialState, action) => {
         PARTY_NM: action.payload.partyName,
         ADD1: action.payload.address,
         PLACE: action.payload.place,
+        REMARK: action.payload?.remark ? action.payload?.remark : '',
       };
     case ADD_REMARK:
       return {

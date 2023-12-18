@@ -22,12 +22,14 @@ import Header from '../Common/Header';
 import {OrderDetailsContext} from '../../reducers/orderDetails';
 import {OrderContext} from '../../reducers/order';
 import {addItemToOrder, emptyOrderStore} from '../../actions/order';
-import {getRequest} from '../../utils/api';
+import {getRequest, putAuthenticatedRequest} from '../../utils/api';
 import {emptyOrderDetails} from '../../actions/orderDetails';
 
 export const ItemDetails = ({navigation, route}: any) => {
   const [singleTreeSpecie, setSingleTreeSpecie] = useState('');
-  const [diameter, setDiameter] = useState('');
+  const [diameter, setDiameter] = useState(
+    route.params.itemRate ? `${route.params.itemRate}` : '',
+  );
   const [diameterError, setDiameterError] = useState('');
   const [height, setHeight] = useState('');
   const [heightError, setHeightError] = useState('');
@@ -70,23 +72,28 @@ export const ItemDetails = ({navigation, route}: any) => {
       LORY_NO: route.params.itemNumber,
       ITEM_NM: route.params.itemName,
     };
+    const updatedItem = await putAuthenticatedRequest('/items/rate', {
+      RATE: diameter,
+      LORY_CD: route.params.itemCode,
+    });
+
     addItemToOrder(item)(orderDispatch);
   };
 
-  const onClickAddItem = () => {
+  const onClickAddItem = async () => {
     if (!height || !diameter) {
       setInvalidValuesModal(true);
     } else {
       if (heightError) {
         setSkipAndAddModal(true);
       } else {
-        addItem();
+        await addItem();
         navigation.navigate('ItemScreen');
       }
     }
   };
 
-  const onClickOrderReview = () => {
+  const onClickOrderReview = async () => {
     if (!height || !diameter) {
       setInvalidValuesModal(true);
     } else {
@@ -97,7 +104,7 @@ export const ItemDetails = ({navigation, route}: any) => {
           setNoItemsModal(true);
         }
       } else {
-        addItem();
+        await addItem();
         navigation.navigate('OrderReview');
       }
     }

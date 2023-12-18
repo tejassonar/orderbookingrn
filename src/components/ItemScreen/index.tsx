@@ -115,6 +115,7 @@ const Search = ({navigation}: any) => {
         itemCode: selectedItem.LORY_CD,
         itemNumber: selectedItem.LORY_NO,
         itemName: selectedItem.ITEM_NM,
+        itemRate: selectedItem.RATE,
       });
     } else {
       setNoItemModal(true);
