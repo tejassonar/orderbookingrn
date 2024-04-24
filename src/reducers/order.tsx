@@ -18,6 +18,7 @@ interface OrderInterface {
   ITEM_NM: String;
   QTY: Number;
   RATE: Number;
+  SCHEME_PRICE: Number;
   BRAND_CD?: String;
   REMARK?: String;
 }

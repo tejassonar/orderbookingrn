@@ -25,6 +25,7 @@ import {upload} from '../../assets/upload';
 import {billPayemnts} from '../../assets/billPayments';
 import Header from '../Common/Header';
 import avatar from '../../assets/avatar.png';
+import SearchInput from '../Common/SearchInput';
 // import {customAlphabet} from 'nanoid/non-secure';
 const MainScreen = ({navigation}: any) => {
   const [partiesUploading, setPartiesUploading] = useState(false);
@@ -47,6 +48,7 @@ const MainScreen = ({navigation}: any) => {
       COMP_CD: userState.COMP_CD,
       CLIENT_CD: userState.CLIENT_CD,
       AGENT_CD: userState.AGENT_CD,
+      ORDER_STATUS: 'PENDING',
     };
     initializeOrder(orderData)(orderDetailsDispatch);
     navigation.navigate('PartyScreen');

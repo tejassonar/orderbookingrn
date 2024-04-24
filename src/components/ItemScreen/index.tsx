@@ -19,6 +19,7 @@ import PrimaryButton from '../Common/PrimaryButton';
 import {OrderDetailsContext} from '../../reducers/orderDetails';
 import AlertModal from '../Common/AlertModal';
 import {OrderContext} from '../../reducers/order';
+import {UserContext} from '../../reducers/user';
 
 const Search = ({navigation}: any) => {
   const [searchText, setSearchText] = useState('');
@@ -29,6 +30,7 @@ const Search = ({navigation}: any) => {
   const [selectedItem, setSelectedItem] = useState({});
   const {state: orderDetailsState, dispatch} = useContext(OrderDetailsContext);
   const {state: orderState, dispatch: orderDispatch} = useContext(OrderContext);
+  const {state: userState} = useContext(UserContext);
 
   const debouncedSearch = useDebounce(searchText, 700);
 
@@ -112,10 +114,11 @@ const Search = ({navigation}: any) => {
   const onPressContinue = () => {
     if (selectedItem.LORY_CD) {
       navigation.navigate('ItemDetails', {
-        itemCode: selectedItem.LORY_CD,
+        brandCode: selectedItem.LORY_CD,
         itemNumber: selectedItem.LORY_NO,
         itemName: selectedItem.ITEM_NM,
         itemRate: selectedItem.RATE,
+        itemCode: selectedItem.ITEM_CD,
       });
     } else {
       setNoItemModal(true);
@@ -200,6 +203,7 @@ const Search = ({navigation}: any) => {
                     backgroundColor: Colors.WHITE,
                     display: 'flex',
                     flexDirection: 'row',
+                    gap: 24,
                   }}
                   onPress={() => {
                     setSelectedItem(props.item);
@@ -211,17 +215,23 @@ const Search = ({navigation}: any) => {
                       fontSize: Typography.FONT_SIZE_14,
                       color: Colors.TEXT_COLOR,
                     }}>
-                    {props.item.ITEM_NM} - {props.item.LORY_NO}
+                    {props.item.ITEM_NM} {props.item.LORY_NO ? '-' : ''}
+                    {props.item.LORY_NO} {props.item.PKG ? '-' : ' '}{' '}
+                    {`${props.item.PKG} PKG`}
                   </Text>
-                  <Text
-                    style={{
-                      fontFamily: Typography.FONT_FAMILY_SEMI_BOLD,
-                      fontSize: Typography.FONT_SIZE_14,
-                      color: Colors.TEXT_COLOR,
-                      paddingRight: 10,
-                    }}>
-                    QTY {props.item.BALQTY}
-                  </Text>
+                  {!userState.BROKER ? (
+                    <Text
+                      style={{
+                        fontFamily: Typography.FONT_FAMILY_SEMI_BOLD,
+                        fontSize: Typography.FONT_SIZE_14,
+                        color: Colors.TEXT_COLOR,
+                        paddingRight: 10,
+                      }}>
+                      QTY {props.item.BALQTY}
+                    </Text>
+                  ) : (
+                    []
+                  )}
                 </TouchableOpacity>
               ) : (
                 // renderSpecieCard(props)
@@ -338,7 +348,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 15,
     elevation: 8,
-    shadowColor: Colors.PRIMARY,
   },
   specieListItem: {
     paddingVertical: 20,
@@ -357,11 +366,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     color: Colors.BLACK,
   },
-  closeIcon: {
-    justifyContent: 'flex-end',
-    color: Colors.TEXT_COLOR,
-    paddingRight: 20,
-  },
+
   headerText: {
     fontFamily: Typography.FONT_FAMILY_EXTRA_BOLD,
     fontSize: Typography.FONT_SIZE_27,

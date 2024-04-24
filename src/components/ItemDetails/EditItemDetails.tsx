@@ -28,11 +28,14 @@ import {
 } from '../../actions/order';
 import {getRequest, putAuthenticatedRequest} from '../../utils/api';
 import {addOrderDetails, emptyOrderDetails} from '../../actions/orderDetails';
+import {UserContext} from '../../reducers/user';
 
 export const EditItemDetails = ({navigation, route}: any) => {
   const [diameter, setDiameter] = useState(`${route.params.rate}`);
   const [diameterError, setDiameterError] = useState('');
+  const [schemeError, setSchemeError] = useState('');
   const [height, setHeight] = useState(`${route.params.quantity}`);
+  const [scheme, setScheme] = useState(`${route.params.schemePrice}`);
   const [heightError, setHeightError] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
   const [skipAndAddModal, setSkipAndAddModal] = useState(false);
@@ -41,9 +44,10 @@ export const EditItemDetails = ({navigation, route}: any) => {
     useState(false);
 
   const {state: orderState, dispatch: orderDispatch} = useContext(OrderContext);
+  const {state: userState} = useContext(UserContext);
 
   const diameterRef = React.createRef();
-  const tagIdRef = React.createRef();
+  const schemeRef = React.createRef();
 
   //   useEffect(() => {
   //     console.log(orderState, 'orderState');
@@ -62,22 +66,28 @@ export const EditItemDetails = ({navigation, route}: any) => {
   const editItem = async () => {
     try {
       setIsDisabled(true);
-      const response = await putAuthenticatedRequest(
-        `/orders/${route.params.orderItemId}`,
-        {
-          QTY: height,
-          RATE: diameter,
-        },
-      );
+      console.log(route.params.orderItemId, 'route.params.orderItemId');
+
+      if (route.params.orderItemId) {
+        const response = await putAuthenticatedRequest(
+          `/orders/${route.params.orderItemId}`,
+          {
+            QTY: height,
+            RATE: diameter,
+            SCHEME_PRICE: scheme,
+          },
+        );
+      }
 
       const payload = {
         index: route.params.index,
-        data: {RATE: diameter, QTY: height},
+        data: {RATE: diameter, QTY: height, SCHEME_PRICE: scheme},
       };
       // addItemToOrder(item)(orderDispatch);
       const res = await editItemInOrder(payload)(orderDispatch);
-      navigation.navigate('OrderReview', {savedOrder: true, editedOrder: true});
+      navigation.navigate('OrderReview', {savedOrder: true});
     } catch (err) {
+      console.log(err, 'Error');
       setInsufficientQuantityModal(true);
     }
   };
@@ -157,6 +167,27 @@ export const EditItemDetails = ({navigation, route}: any) => {
                     />
                   </View>
                 </View>
+                {userState.AGENCY ? (
+                  <View style={[styles.inputBox, {zIndex: 1}]}>
+                    <View>
+                      <OutlinedInput
+                        value={scheme}
+                        onChangeText={(text: string) => {
+                          setSchemeError('');
+                          setScheme(text);
+                        }}
+                        label={'Scheme Price'}
+                        keyboardType={'decimal-pad'}
+                        error={schemeError}
+                        ref={schemeRef}
+                        returnKeyType={'default'}
+                        // onSubmitEditing={() => tagIdRef.current.focus()}
+                      />
+                    </View>
+                  </View>
+                ) : (
+                  []
+                )}
               </View>
 
               <View style={styles.bottomBtnsContainer}>
@@ -179,7 +210,6 @@ export const EditItemDetails = ({navigation, route}: any) => {
             setInsufficientQuantityModal(false);
             navigation.navigate('OrderReview', {
               savedOrder: true,
-              editedOrder: true,
             });
           }}
         />

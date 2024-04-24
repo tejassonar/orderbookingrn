@@ -23,7 +23,7 @@ interface OrderDetailsInterface {
   ADD1: String;
   PLACE: String;
   // };
-  // OrderStatus?: String;
+  ORDER_STATUS?: String;
 }
 
 // stores the initial properties of the species state

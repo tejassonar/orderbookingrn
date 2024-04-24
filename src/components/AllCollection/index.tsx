@@ -5,9 +5,16 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  FlatList,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import Header from '../Common/Header';
 import {Colors, Typography} from '../../styles';
 import OutlinedInput from '../Common/OutlinedInput';
@@ -15,26 +22,61 @@ import {SvgXml} from 'react-native-svg';
 import {noOrder} from '../../assets/noOrder';
 import moment from 'moment';
 import {getAuthenticatedRequest} from '../../utils/api';
-import {Cell, Row, Table, TableWrapper} from 'react-native-table-component';
 import DropDown from '../Common/DropDown';
 import {formatDate} from '../../utils/formatDate';
-import SharePDFReport from './SharePDFReport';
+import SearchInput from '../Common/SearchInput';
+import CollectionCard from './CollectionCard';
+import DateTimePicker from '../Common/DateTimePicker';
 
 const AllCollection = ({navigation}: any) => {
   const [date, setDate] = useState(new Date());
+  const [startDate, setStartDate] = useState<Date | undefined>();
+  const [endDate, setEndDate] = useState<Date | undefined>();
   const [showDate, setShowDate] = useState(false);
+  const [showFromDate, setShowFromDate] = useState(false);
+  const [showToDate, setShowToDate] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [payments, setPayments] = useState();
   const [paymentMethod, setPaymentMethod] = useState('');
+  const [searchedParties, setSearchedParties] = useState<any>([]);
+  // const [searchValue, setSearchValue] = useState<string>('');
+  const searchInputRef = useRef<any>();
+
   useEffect(() => {
     getOrders();
   }, [date, paymentMethod]);
 
-  async function getOrders() {
-    const response = await getAuthenticatedRequest(
-      `/payments?date=${date}&payment_method=${paymentMethod}`,
-    );
-    setPayments(response.data[0]);
-  }
+  const getOrders = useCallback(
+    async (partyCode?: string) => {
+      console.log(partyCode, date, paymentMethod, 'partyCode');
+
+      const response = await getAuthenticatedRequest(
+        `/payments?date=${date}&payment_method=${paymentMethod}&partyCode=${
+          partyCode ?? ''
+        }`,
+      );
+      setPayments(response.data[0]);
+    },
+    [date, paymentMethod],
+  );
+
+  const searchParties = useCallback(async (searchQuery: string) => {
+    try {
+      const parties: any = await getAuthenticatedRequest(
+        `/parties/search/?name=${searchQuery}&limit=5`,
+      );
+      // let partyNames;
+
+      if (parties.data.length > 0) {
+        const partyNames = parties.data.map((party: any) => {
+          return {name: party.PARTY_NM, id: party.PARTY_CD};
+        });
+        return partyNames;
+      }
+    } catch (err) {
+      console.log(err, '==Error==');
+    }
+  }, []);
 
   const PaymentMethodOptions = [
     {
@@ -64,16 +106,20 @@ const AllCollection = ({navigation}: any) => {
     },
   ];
 
+  const SelectOptionFunc = useCallback((id: string) => {
+    getOrders(id);
+  }, []);
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.container}>
         <View style={styles.cont}>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps={'always'}
-            style={{zIndex: 1, flex: 1, display: 'flex'}}>
+          <View
+            // nestedScrollEnabled
+            // showsVerticalScrollIndicator={false}
+            // keyboardShouldPersistTaps={'always'}
+            style={{flex: 1, display: 'flex'}}>
             <Header
-              //   closeIcon
               headingText={'All Collection'}
               subHeadingText={'All the collection saved by you '}
               onBackPress={() => {
@@ -81,178 +127,190 @@ const AllCollection = ({navigation}: any) => {
               }}
             />
             <View style={{flex: 1}}>
-              <View
-                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                <TouchableOpacity
-                  onPressIn={() => {
-                    setShowDate(true);
-                  }}
-                  style={{marginVertical: 10, width: '48%'}}>
-                  <OutlinedInput
-                    // value={date?.UTC()}
-                    value={moment(date).tz('Asia/Kolkata').format('ll')}
-                    onChangeText={(text: string) => setDate(text)}
-                    label={'Date'}
-                    editable={false}
-                    returnKeyType={'next'}
-                    onSubmitEditing={() => {}}
-                  />
-                </TouchableOpacity>
-                <DropDown
-                  label={'Payment Method'}
-                  options={PaymentMethodOptions}
-                  onChange={(type: any) => setPaymentMethod(type.key)}
-                  defaultValue={PaymentMethodOptions[0]}
-                  editable={true}
-                  containerStyle={{marginVertical: 10, width: '48%'}}
-                  // backgroundLabelColor={'#f2f2f2'}
-                  // containerBackgroundColor={'#f2f2f2'}
-                />
-                {/* <OutlinedInput
-                  style={{marginVertical: 10, width: '48%'}}
-                  label={'Payment Method'}
-                  value={'All'}
-                  isDropdown={true}
-                /> */}
-              </View>
-              {payments?.TOTAL_PAYMENT_TYPE_RCV_AMT ? (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginTop: 10,
-                  }}>
-                  <Text
-                    style={{
-                      color: Colors.PRIMARY,
-                      fontWeight: Typography.FONT_WEIGHT_BOLD,
-                      fontFamily: Typography.FONT_FAMILY_REGULAR,
-                      fontSize: Typography.FONT_SIZE_16,
-                    }}>
-                    Total Collection: ₹{payments.TOTAL_PAYMENT_TYPE_RCV_AMT}
-                  </Text>
-                  {paymentMethod ? (
-                    <Text style={{color: Colors.TEXT_COLOR}}>
-                      {' '}
-                      ({paymentMethod})
-                    </Text>
-                  ) : (
-                    []
-                  )}
-                </View>
-              ) : null}
-              {payments?.PAYMENTS.length > 0 ? (
-                payments?.PAYMENTS.map((payment, index) => (
-                  <View style={{marginTop: 20}}>
-                    {payment.BILLS && (
-                      <View style={styles.cardContainer}>
-                        <SharePDFReport
-                          PARTY_NM={payment.PARTY_NM}
-                          PARTY_CD={payment.PARTY_CD}
-                          BILL_DT={formatDate(payment.BILL_DT)}
-                          PAYMENT_TYPE={
-                            payment.PAYMENT_TYPE.charAt(0).toUpperCase() +
-                            payment.PAYMENT_TYPE.slice(1)
-                          }
-                          TOTAL={payment.TOTAL}
-                          BILLS={payment.BILLS}
-                        />
-                        <Text style={styles.title}>{payment.PARTY_NM}</Text>
-                        <Text style={styles.cardText}>
-                          Party Code: {payment.PARTY_CD}
-                        </Text>
-                        <Text style={styles.cardText}>
-                          Total Amount: ₹{payment.TOTAL}
-                        </Text>
-                        <Text style={styles.cardText}>
-                          Payment Method:{' '}
-                          {payment.PAYMENT_TYPE.charAt(0).toUpperCase() +
-                            payment.PAYMENT_TYPE.slice(1)}
-                        </Text>
-                        <Text style={styles.cardText}>
-                          Date: {formatDate(payment.BILL_DT)}
-                        </Text>
-                        <Table
-                          borderStyle={{
-                            borderWidth: 2,
-                            borderColor: '#c8e1ff',
-                          }}>
-                          <Row
-                            data={[
-                              'Doc No.',
-                              'Doc Date',
-                              'Pending (Total)',
-                              'Received',
-                            ]}
-                            flexArr={[2, 2, 2, 2, 2]}
-                            style={styles.head}
-                            textStyle={styles.headerText}
-                          />
-                          {payment.BILLS.map((rowData, index) => {
-                            const itemData = [
-                              `${rowData.DOC_NO}`,
-                              formatDate(rowData.DOC_DT),
-                              `${rowData.PND_AMT} (${rowData.BIL_AMT})`,
-                              `${rowData.RCV_AMT}`,
-                            ];
-                            return (
-                              <TableWrapper key={index} style={styles.row}>
-                                {itemData.map((cellData, cellIndex) => {
-                                  return (
-                                    <Cell
-                                      key={`${cellIndex}-${cellData}`}
-                                      data={cellData}
-                                      flex={2}
-                                      textStyle={styles.text}
-                                    />
-                                  );
-                                })}
-                              </TableWrapper>
-                            );
-                          })}
-                        </Table>
-                      </View>
-                    )}
+              <FlatList
+                data={payments?.PAYMENTS}
+                renderItem={payment => (
+                  <View style={{zIndex: -100}}>
+                    <CollectionCard payment={payment?.item} />
                   </View>
-                ))
-              ) : (
-                <View style={styles.svgContainer}>
-                  <SvgXml xml={noOrder} height={'250px'} width={'250px'} />
-                  <Text style={styles.svgText}>No Collection Found</Text>
-                  <Text style={styles.svgSubText}>
-                    Looks like there aren't any collection for this day
-                  </Text>
-                </View>
-              )}
-            </View>
-            {
-              <DateTimePickerModal
-                headerTextIOS={`Pick a Date`}
-                cancelTextIOS={`Cancel`}
-                confirmTextIOS={`Confirm`}
-                isVisible={showDate}
-                maximumDate={
-                  new Date(new Date().setDate(new Date().getDate() + 1))
-                }
-                minimumDate={new Date(2006, 0, 1)}
-                testID="dateTimePicker"
-                timeZoneOffsetInMinutes={330}
-                date={new Date()}
-                mode={'date'}
-                is24Hour={true}
-                display="default"
-                onConfirm={date => {
-                  console.log(date, '==Date==');
-
-                  setShowDate(false);
-                  setDate(date);
-                }}
-                onCancel={() => {
-                  setShowDate(false);
-                }}
+                )}
+                keyExtractor={payment => payment?._id}
+                showsVerticalScrollIndicator={false}
+                ListHeaderComponentStyle={{zIndex: 100}}
+                removeClippedSubviews={false}
+                keyboardShouldPersistTaps="always"
+                ListEmptyComponent={() => (
+                  <View style={styles.svgContainer}>
+                    <SvgXml xml={noOrder} height={'250px'} width={'250px'} />
+                    <Text style={styles.svgText}>No Collection Found</Text>
+                    <Text style={styles.svgSubText}>
+                      Looks like there aren't any collection for this day
+                    </Text>
+                  </View>
+                )}
+                ListHeaderComponent={() => (
+                  <View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                      }}>
+                      <TouchableOpacity
+                        onPressIn={() => {
+                          setShowDate(true);
+                        }}
+                        style={{marginVertical: 10, width: '48%'}}>
+                        <OutlinedInput
+                          // value={date?.UTC()}
+                          value={moment(date).tz('Asia/Kolkata').format('ll')}
+                          onChangeText={(text: string) => setDate(text)}
+                          label={'Date'}
+                          editable={false}
+                        />
+                      </TouchableOpacity>
+                      <DropDown
+                        label={'Payment Method'}
+                        options={PaymentMethodOptions}
+                        onChange={(type: any) => setPaymentMethod(type.key)}
+                        defaultValue={PaymentMethodOptions[0]}
+                        editable={true}
+                        containerStyle={{marginVertical: 10, width: '48%'}}
+                      />
+                    </View>
+                    {true ? (
+                      <>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                          }}>
+                          <TouchableOpacity
+                            onPressIn={() => {
+                              setShowFromDate(true);
+                            }}
+                            style={{marginVertical: 10, width: '48%'}}>
+                            <OutlinedInput
+                              // value={date?.UTC()}
+                              value={
+                                startDate
+                                  ? moment(startDate)
+                                      .tz('Asia/Kolkata')
+                                      .format('ll')
+                                  : ''
+                              }
+                              onChangeText={(text: string) =>
+                                setStartDate(text)
+                              }
+                              label={'Start Date'}
+                              editable={false}
+                            />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPressIn={() => {
+                              setShowToDate(true);
+                            }}
+                            style={{marginVertical: 10, width: '48%'}}>
+                            <OutlinedInput
+                              // value={date?.UTC()}
+                              value={
+                                endDate
+                                  ? moment(endDate)
+                                      .tz('Asia/Kolkata')
+                                      .format('ll')
+                                  : ''
+                              }
+                              onChangeText={(text: string) => setEndDate(text)}
+                              label={'End Date'}
+                              editable={false}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                        <SearchInput
+                          label={'Party Name'}
+                          style={{marginVertical: 10, zIndex: 1}}
+                          searchFunction={searchParties}
+                          SelectOptionFunc={SelectOptionFunc}
+                          ref={searchInputRef}
+                          // value={searchValue}
+                          // setValue={setSearchValue}
+                          // options={searchedParties}
+                          // onFocusFunction={() => setElevation(100)}
+                        />
+                      </>
+                    ) : (
+                      []
+                    )}
+                    <TouchableOpacity
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        paddingRight: 10,
+                      }}
+                      onPress={() => setShowFilters(!showFilters)}>
+                      <Text
+                        style={{
+                          color: Colors.PRIMARY,
+                          fontWeight: Typography.FONT_WEIGHT_BOLD,
+                        }}>
+                        {showFilters ? 'Less Filters' : 'More Filters'}
+                      </Text>
+                    </TouchableOpacity>
+                    {payments?.TOTAL_PAYMENT_TYPE_RCV_AMT ? (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          marginTop: 10,
+                        }}>
+                        <Text
+                          style={{
+                            color: Colors.PRIMARY,
+                            fontWeight: Typography.FONT_WEIGHT_BOLD,
+                            fontFamily: Typography.FONT_FAMILY_REGULAR,
+                            fontSize: Typography.FONT_SIZE_16,
+                          }}>
+                          Total Collection: ₹
+                          {payments.TOTAL_PAYMENT_TYPE_RCV_AMT}
+                        </Text>
+                        {paymentMethod ? (
+                          <Text style={{color: Colors.TEXT_COLOR}}>
+                            {' '}
+                            ({paymentMethod})
+                          </Text>
+                        ) : (
+                          []
+                        )}
+                      </View>
+                    ) : null}
+                  </View>
+                )}
               />
-            }
-          </ScrollView>
+            </View>
+            <DateTimePicker
+              date={date}
+              setDate={setDate}
+              showDate={showDate}
+              setShowDate={setShowDate}
+              key={'date'}
+              id={'date'}
+            />
+            <DateTimePicker
+              date={startDate}
+              setDate={setStartDate}
+              showDate={showFromDate}
+              setShowDate={setShowFromDate}
+              key={'fromDate'}
+              id={'fromDate'}
+            />
+            <DateTimePicker
+              date={endDate}
+              setDate={setEndDate}
+              showDate={showToDate}
+              setShowDate={setShowToDate}
+              key={'toDate'}
+              id={'toDate'}
+            />
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -330,4 +388,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-export default AllCollection;
+export default memo(AllCollection);

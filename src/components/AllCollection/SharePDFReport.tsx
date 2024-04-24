@@ -14,6 +14,8 @@ function SharePDFReport({
   PAYMENT_TYPE,
   TOTAL,
   BILLS,
+  TRANSACTION_NO,
+  CHQ_DT,
 }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [count, setCount] = useState(1);
@@ -64,13 +66,23 @@ function SharePDFReport({
             <td>${PARTY_CD}</td>
           </tr>
           <tr>
-            <th>Order Date</th>
+            <th>Receipt Date</th>
             <td>${BILL_DT}</td>
           </tr>
           <tr>
             <th>Payment Method</th>
-            <td>${PAYMENT_TYPE}</td>
+            <td>${PAYMENT_TYPE} (${
+        PAYMENT_TYPE === 'Cheque' ? CHQ_DT : ''
+      })</td>
           </tr>
+          ${
+            TRANSACTION_NO && PAYMENT_TYPE === 'Cheque'
+              ? `<tr>
+            <th>Cheque Number</th>
+            <td>${TRANSACTION_NO}</td>
+          </tr>`
+              : []
+          }
           <tr>
             <th>Total Payment</th>
             <td>₹${TOTAL}</td>

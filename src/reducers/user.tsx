@@ -15,6 +15,8 @@ const initialState = {
   PHONE_NUMBER: null,
   AGENT_CD: null,
   ADMIN: false,
+  BROKER: false,
+  AGENCY: false,
   COMP_CD: null,
   CLIENT_CD: null,
 };

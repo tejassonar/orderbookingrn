@@ -24,6 +24,7 @@ import {OrderContext} from '../../reducers/order';
 import {addItemToOrder, emptyOrderStore} from '../../actions/order';
 import {getRequest, putAuthenticatedRequest} from '../../utils/api';
 import {emptyOrderDetails} from '../../actions/orderDetails';
+import {UserContext} from '../../reducers/user';
 
 export const ItemDetails = ({navigation, route}: any) => {
   const [singleTreeSpecie, setSingleTreeSpecie] = useState('');
@@ -33,7 +34,8 @@ export const ItemDetails = ({navigation, route}: any) => {
   const [diameterError, setDiameterError] = useState('');
   const [height, setHeight] = useState('');
   const [heightError, setHeightError] = useState('');
-  const [tagId, setTagId] = useState('');
+  const [schemeError, setSchemeError] = useState('');
+  const [scheme, setScheme] = useState('');
   const [qty, setQty] = useState<any>(0);
   const [invalidValuesModal, setInvalidValuesModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
@@ -41,21 +43,17 @@ export const ItemDetails = ({navigation, route}: any) => {
   const [skipAndAddModal, setSkipAndAddModal] = useState(false);
   const [skipAndReviewModal, setSkipAndReviewModal] = useState(false);
   const [noItemsModal, setNoItemsModal] = useState(false);
-  const [diameterLabel, setDiameterLabel] = useState<string>(
-    'label.measurement_basal_diameter',
-  );
-  const [showIncorrectRatioAlert, setShowIncorrectRatioAlert] =
-    useState<boolean>(false);
   const {state: orderDetailsState, dispatch: orderDetailsDispatch} =
     useContext(OrderDetailsContext);
   const {state: orderState, dispatch: orderDispatch} = useContext(OrderContext);
+  const {state: userState} = useContext(UserContext);
 
   const diameterRef = React.createRef();
-  const tagIdRef = React.createRef();
+  const schemeRef = React.createRef();
 
   const checkQuantity = async () => {
     setHeightError('');
-    const response = await getRequest(`/items/${route.params.itemCode}`);
+    const response = await getRequest(`/items/${route.params.brandCode}`);
 
     if (response.data.balanceQuantity < Number(height)) {
       setHeightError(`Only ${response.data.balanceQuantity} QTY available!`);
@@ -68,14 +66,18 @@ export const ItemDetails = ({navigation, route}: any) => {
       ...orderDetailsState,
       RATE: diameter,
       QTY: height,
-      LORY_CD: route.params.itemCode,
+      SCHEME_PRICE: scheme,
+      LORY_CD: route.params.brandCode,
       LORY_NO: route.params.itemNumber,
       ITEM_NM: route.params.itemName,
+      ITEM_CD: route.params.itemCode,
     };
-    const updatedItem = await putAuthenticatedRequest('/items/rate', {
-      RATE: diameter,
-      LORY_CD: route.params.itemCode,
-    });
+    if (route.params.brandCode) {
+      const updatedItem = await putAuthenticatedRequest('/items/rate', {
+        RATE: diameter,
+        LORY_CD: route.params.brandCode,
+      });
+    }
 
     addItemToOrder(item)(orderDispatch);
   };
@@ -143,7 +145,9 @@ export const ItemDetails = ({navigation, route}: any) => {
                       autoFocus
                       returnKeyType={'next'}
                       onEndEditing={() => {
-                        checkQuantity();
+                        if (!userState.BROKER) {
+                          checkQuantity();
+                        }
                       }}
                       onSubmitEditing={() => {
                         diameterRef.current.focus();
@@ -165,10 +169,31 @@ export const ItemDetails = ({navigation, route}: any) => {
                       error={diameterError}
                       ref={diameterRef}
                       returnKeyType={'default'}
-                      onSubmitEditing={() => tagIdRef.current.focus()}
+                      onSubmitEditing={() => schemeRef.current.focus()}
                     />
                   </View>
                 </View>
+                {userState.AGENCY ? (
+                  <View style={[styles.inputBox, {zIndex: 1}]}>
+                    <View>
+                      <OutlinedInput
+                        value={scheme}
+                        onChangeText={(text: string) => {
+                          setSchemeError('');
+                          setScheme(text);
+                        }}
+                        label={'Scheme Price'}
+                        keyboardType={'decimal-pad'}
+                        error={schemeError}
+                        ref={schemeRef}
+                        returnKeyType={'default'}
+                        // onSubmitEditing={() => tagIdRef.current.focus()}
+                      />
+                    </View>
+                  </View>
+                ) : (
+                  []
+                )}
               </View>
 
               <View style={styles.bottomBtnsContainer}>

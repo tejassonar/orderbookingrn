@@ -15,7 +15,11 @@ import AlertModal from '../Common/AlertModal';
 import Label from '../Common/Label';
 import {OrderDetailsContext} from '../../reducers/orderDetails';
 import {OrderContext} from '../../reducers/order';
-import {deleteAuthenticatedRequest, postRequest} from '../../utils/api';
+import {
+  deleteAuthenticatedRequest,
+  postAuthenticatedRequest,
+  postRequest,
+} from '../../utils/api';
 import {emptyOrderStore, removeItemFromOrder} from '../../actions/order';
 import {emptyOrderDetails} from '../../actions/orderDetails';
 import {Table, Row, TableWrapper, Cell} from 'react-native-table-component';
@@ -43,7 +47,9 @@ const OrderReview = ({navigation, route}: any) => {
     console.log(orderState, 'orderState');
 
     try {
-      const response = await postRequest('/orders', {orders: orderState});
+      const response = await postAuthenticatedRequest('/orders', {
+        orders: orderState,
+      });
       emptyOrderStore()(orderDispatch);
       emptyOrderDetails()(orderDetailsDispatch);
 
@@ -72,6 +78,7 @@ const OrderReview = ({navigation, route}: any) => {
             navigation.navigate('EditItemDetails', {
               quantity: orderState[index].QTY,
               rate: orderState[index].RATE,
+              schemePrice: orderState[index].SCHEME_PRICE,
               orderItemId: cellData,
               index,
             });
@@ -199,7 +206,7 @@ const OrderReview = ({navigation, route}: any) => {
                 )}
               </View>
             </ScrollView>
-            {!isSavedOrder && (
+            {orderDetailsState.ORDER_STATUS === 'PENDING' && (
               <View style={styles.bottomButtonContainer}>
                 <PrimaryButton
                   onPress={saveOrder}
