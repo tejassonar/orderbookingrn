@@ -2,19 +2,23 @@ import React from 'react';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 interface DatePickerProps {
-  date: Date;
+  date: Date | undefined;
   showDate: boolean;
   setShowDate: React.Dispatch<React.SetStateAction<boolean>>;
-  setDate: React.Dispatch<React.SetStateAction<Date>>;
+  // setDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
   id: string;
+  onConfirm: (date: Date) => void;
 }
 const DateTimePicker = ({
   date,
   showDate,
   setShowDate,
-  setDate,
+  // setDate,
   id,
+  onConfirm,
 }: DatePickerProps) => {
+  // console.log(date, id, 'date');
+
   return (
     <DateTimePickerModal
       headerTextIOS={`Pick a Date`}
@@ -31,9 +35,7 @@ const DateTimePicker = ({
       is24Hour={true}
       display="default"
       onConfirm={date => {
-        console.log(date, 'date');
-        setDate(date);
-        setShowDate(false);
+        onConfirm(date);
       }}
       onCancel={() => {
         setShowDate(false);

@@ -1,5 +1,6 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
+  FlatList,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -22,10 +23,16 @@ import {noOrder} from '../../assets/noOrder';
 import OrderCard from './OrderCard';
 // import moment from 'moment';
 import moment from 'moment-timezone';
+import OrdersHeader from './OrdersHeader';
+import DateTimePicker from '../Common/DateTimePicker';
+import FA5Icon from 'react-native-vector-icons/FontAwesome5';
 
 const AllOrders = ({navigation}: any) => {
   const [orders, setOrders] = useState([]);
   const [showDate, setShowDate] = useState(false);
+  const [showFromDate, setShowFromDate] = useState(false);
+  const [showToDate, setShowToDate] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const [listView, setListView] = useState(true);
   const {state: orderDetailsState, dispatch: orderDetailsDispatch} =
     useContext(OrderDetailsContext);
@@ -33,22 +40,34 @@ const AllOrders = ({navigation}: any) => {
 
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date());
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
   useEffect(() => {
     getOrders();
-  }, [date, orderState]);
+  }, [date, orderState, searchValue, startDate, endDate]);
 
-  async function getOrders() {
-    const response = await getAuthenticatedRequest(`/orders?date=${date}`);
+  const getOrders = useCallback(async () => {
+    let filters = ``;
+    if (date) {
+      filters = filters + `&date=${date}`;
+    }
+    if (startDate && endDate) {
+      filters = filters + `&from=${startDate}&to=${endDate}`;
+    }
+    if (searchValue) {
+      filters = filters + `&partyCode=${searchValue}`;
+    }
+    const response = await getAuthenticatedRequest(`/orders?${filters}`);
     setOrders(response.data);
-  }
+  }, [date, searchValue, startDate, endDate]);
 
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.container}>
         <View style={styles.cont}>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps={'always'}
+          <View
+            // showsVerticalScrollIndicator={false}
+            // keyboardShouldPersistTaps={'always'}
             style={{zIndex: 1, flex: 1, display: 'flex'}}>
             <Header
               //   closeIcon
@@ -69,134 +88,130 @@ const AllOrders = ({navigation}: any) => {
                       right: 10,
                       zIndex: 1,
                     }}>
-                    <Text
-                      style={{
-                        color: Colors.PRIMARY,
-                        fontFamily: Typography.FONT_FAMILY_BOLD,
-                        fontWeight: Typography.FONT_WEIGHT_BOLD,
-                        fontSize: Typography.FONT_SIZE_16,
-                      }}>
-                      Change View
-                    </Text>
+                    <FA5Icon
+                      name={listView ? 'th-large' : 'list'}
+                      color={Colors.TEXT_COLOR}
+                      size={20}
+                    />
                   </TouchableOpacity>
                 );
               }}
             />
             <View style={{flex: 1}}>
-              <TouchableOpacity
-                onPressIn={() => {
-                  setShowDate(true);
-                }}
-                style={{marginVertical: 10}}>
-                <OutlinedInput
-                  // value={date?.UTC()}
-                  value={moment(date).tz('Asia/Kolkata').format('ll')}
-                  onChangeText={(text: string) => setDate(text)}
-                  label={'Date'}
-                  editable={false}
-                  returnKeyType={'next'}
-                  onSubmitEditing={() => {}}
-                />
-              </TouchableOpacity>
-
-              {orders.length > 0 ? (
-                orders.map((order, index) =>
-                  listView ? (
-                    <TouchableOpacity
-                      key={index}
-                      style={{
-                        paddingVertical: 10,
-                        borderBottomWidth: 1,
-                        borderBottomColor: Colors.TEXT_COLOR,
-                        minHeight: 80,
-                        zIndex: 1,
-                      }}
-                      onPress={async () => {
-                        addBulkItemsToOrder(order.ITEMS)(orderDispatch);
-                        const {ITEMS, ...orderDetails} = order;
-                        addOrderDetails(orderDetails)(orderDetailsDispatch);
-                        navigation.navigate('OrderReview', {
-                          savedOrder: true,
-                        });
-                      }}>
-                      <View
+              <FlatList
+                data={orders}
+                renderItem={order => (
+                  <View style={{zIndex: -100}}>
+                    {listView ? (
+                      <TouchableOpacity
+                        // key={index}
                         style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          flex: 1,
+                          paddingVertical: 10,
+                          borderBottomWidth: 1,
+                          borderBottomColor: Colors.TEXT_COLOR,
+                          minHeight: 80,
+                          zIndex: 1,
+                        }}
+                        onPress={async () => {
+                          addBulkItemsToOrder(order.item.ITEMS)(orderDispatch);
+                          const {ITEMS, ...orderDetails} = order.item;
+                          addOrderDetails(orderDetails)(orderDetailsDispatch);
+                          navigation.navigate('OrderReview', {
+                            savedOrder: true,
+                          });
                         }}>
-                        <Text style={styles.partyCode}>{order.PARTY_CD}</Text>
-                        <View style={{flex: 3}}>
-                          <Text style={styles.item}>{order.PARTY_NM}</Text>
-                          <Text style={styles.subText}>
-                            {order.ADD1} {order.PLACE}
+                        <View
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            flex: 1,
+                          }}>
+                          <Text style={styles.partyCode}>
+                            {order.item.PARTY_CD}
                           </Text>
+                          <View style={{flex: 3}}>
+                            <Text style={styles.item}>
+                              {order.item.PARTY_NM}
+                            </Text>
+                            <Text style={styles.subText}>
+                              {order.item.ADD1} {order.item.PLACE}
+                            </Text>
+                          </View>
                         </View>
-                      </View>
-                    </TouchableOpacity>
-                  ) : (
-                    <OrderCard data={order} key={index} />
-                  ),
-                )
-              ) : (
-                <View
-                  style={{
-                    display: 'flex',
-                    flex: 1,
-                    height: '100%',
-                    alignSelf: 'center',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <SvgXml xml={noOrder} height={'250px'} width={'250px'} />
-                  <Text
-                    style={{
-                      fontFamily: Typography.FONT_FAMILY_EXTRA_BOLD,
-                      fontSize: Typography.FONT_SIZE_27,
-                      color: Colors.TEXT_COLOR,
-                      textAlign: 'center',
-                    }}>
-                    No Orders Found
-                  </Text>
-                  <Text
-                    style={{
-                      fontFamily: Typography.FONT_FAMILY_SEMI_BOLD,
-                      fontSize: Typography.FONT_SIZE_18,
-                      lineHeight: Typography.LINE_HEIGHT_24,
-                      color: Colors.TEXT_COLOR,
-                      textAlign: 'center',
-                    }}>
-                    Looks like there aren't any orders for this day
-                  </Text>
-                </View>
-              )}
-            </View>
-            {
-              <DateTimePickerModal
-                headerTextIOS={`Pick a Date`}
-                cancelTextIOS={`Cancel`}
-                confirmTextIOS={`Confirm`}
-                isVisible={showDate}
-                maximumDate={
-                  new Date(new Date().setDate(new Date().getDate() + 1))
+                      </TouchableOpacity>
+                    ) : (
+                      <OrderCard data={order.item} />
+                    )}
+                  </View>
+                )}
+                keyExtractor={order => order?._id}
+                showsVerticalScrollIndicator={false}
+                ListHeaderComponentStyle={{zIndex: 100}}
+                removeClippedSubviews={false}
+                keyboardShouldPersistTaps="always"
+                ListEmptyComponent={() => (
+                  <View style={styles.svgContainer}>
+                    <SvgXml xml={noOrder} height={'250px'} width={'250px'} />
+                    <Text style={styles.svgText}>No Orders Found</Text>
+                    <Text style={styles.svgSubText}>
+                      Looks like there aren't any orders for this day
+                    </Text>
+                  </View>
+                )}
+                ListHeaderComponent={
+                  <OrdersHeader
+                    date={date}
+                    startDate={startDate}
+                    endDate={endDate}
+                    setShowDate={setShowDate}
+                    setShowFromDate={setShowFromDate}
+                    setShowToDate={setShowToDate}
+                    setSearchValue={setSearchValue}
+                  />
                 }
-                minimumDate={new Date(2006, 0, 1)}
-                testID="dateTimePicker"
-                timeZoneOffsetInMinutes={330}
-                date={new Date()}
-                mode={'date'}
-                is24Hour={true}
-                display="default"
-                onConfirm={date => {
-                  setShowDate(false);
-                  setDate(date);
-                }}
-                onCancel={() => {
-                  setShowDate(false);
-                }}
               />
-            }
-          </ScrollView>
+            </View>
+            <DateTimePicker
+              date={date}
+              // setDate={setDate}
+              showDate={showDate}
+              setShowDate={setShowDate}
+              key={'date'}
+              id={'date'}
+              onConfirm={(date: Date) => {
+                setDate(date);
+                setStartDate(undefined);
+                setEndDate(undefined);
+                setShowDate(false);
+              }}
+            />
+            <DateTimePicker
+              date={startDate}
+              // setDate={setStartDate}
+              showDate={showFromDate}
+              setShowDate={setShowFromDate}
+              key={'fromDate'}
+              id={'fromDate'}
+              onConfirm={(date: Date) => {
+                setStartDate(date);
+                setDate(undefined);
+                setShowFromDate(false);
+              }}
+            />
+            <DateTimePicker
+              date={endDate}
+              // setDate={setEndDate}
+              showDate={showToDate}
+              setShowDate={setShowToDate}
+              key={'toDate'}
+              id={'toDate'}
+              onConfirm={(date: Date) => {
+                setEndDate(date);
+                setDate(undefined);
+                setShowToDate(false);
+              }}
+            />
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -315,6 +330,27 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.GRAY_LIGHT,
     height: 1,
     marginHorizontal: 8,
+  },
+  svgContainer: {
+    display: 'flex',
+    flex: 1,
+    height: '100%',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  svgText: {
+    fontFamily: Typography.FONT_FAMILY_EXTRA_BOLD,
+    fontSize: Typography.FONT_SIZE_27,
+    color: Colors.TEXT_COLOR,
+    textAlign: 'center',
+  },
+  svgSubText: {
+    fontFamily: Typography.FONT_FAMILY_SEMI_BOLD,
+    fontSize: Typography.FONT_SIZE_18,
+    lineHeight: Typography.LINE_HEIGHT_24,
+    color: Colors.TEXT_COLOR,
+    textAlign: 'center',
   },
 });
 export default AllOrders;

@@ -32,7 +32,6 @@ const PaymentMethod = ({navigation, route}: {navigation: any; route: any}) => {
   const {state: billPaymentState, dispatch: billPaymentDispatch} =
     useContext(BillPaymentContext);
 
-  console.log(route.params?.totalPayment, '==billPaymentState==');
   const paymentOptions = [
     {
       key: 'upi',
@@ -81,7 +80,6 @@ const PaymentMethod = ({navigation, route}: {navigation: any; route: any}) => {
             <OutlinedInput
               value={date.toDateString()}
               // value={}
-              onChangeText={(text: string) => console.log(text)}
               label={'Date'}
               style={{marginVertical: 5}}
               editable={false}
@@ -110,7 +108,6 @@ const PaymentMethod = ({navigation, route}: {navigation: any; route: any}) => {
       };
       //   await addBill(payload)(billPaymentDispatch);
       const {BILLS, ...billPaymentData} = billPaymentState;
-      console.log(billPaymentData, '===billPaymentData===');
 
       const data = await billPaymentState.BILLS?.map((bill: any) => {
         return {
@@ -119,13 +116,11 @@ const PaymentMethod = ({navigation, route}: {navigation: any; route: any}) => {
           ...paymentDetails,
         };
       });
-      console.log(data, '=====dataData===');
 
       try {
         const createPayment = await postAuthenticatedRequest('/payments', {
           bills: data,
         });
-        console.log(createPayment, 'createPayment');
         await emptyBillPaymentStore()(billPaymentDispatch);
         navigation.navigate('MainScreen');
       } catch (err) {
@@ -134,7 +129,6 @@ const PaymentMethod = ({navigation, route}: {navigation: any; route: any}) => {
       //   billPaymentDispatch();
     }
   };
-  console.log(billPaymentState, 'billPaymentState');
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -152,12 +146,10 @@ const PaymentMethod = ({navigation, route}: {navigation: any; route: any}) => {
                     // await emptyOrderDetails()(orderDetailsDispatch);
                     navigation.goBack();
                   }}
-                  onPressFunction={() => console.log('Pressed')}
                 />
                 <Label
                   leftText={'Total Payment'}
                   rightText={`₹${route.params?.totalPayment}`}
-                  onPressRightText={() => console.log('Pressed')}
                   rightTextStyle={{color: Colors.TEXT_COLOR}}
                 />
                 {paymentOptions.map((option, index) => {

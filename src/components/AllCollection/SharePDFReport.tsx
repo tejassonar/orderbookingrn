@@ -122,8 +122,6 @@ function SharePDFReport({
       };
       const file = await RNHTMLtoPDF.convert(options);
 
-      console.log(`PDF saved to ${file.filePath}`, file);
-
       const showError = await RNShareFile(file.base64, 'payment.pdf');
       if (showError) {
         // Do something with the error

@@ -13,7 +13,6 @@ import {Colors, Typography} from '../../styles';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {getAuthenticatedRequest, getRequest} from '../../utils/api';
 import Header from '../Common/Header';
-import Icon from 'react-native-vector-icons/Ionicons';
 import useDebounce from '../../hooks/useDebounce';
 import PrimaryButton from '../Common/PrimaryButton';
 import {OrderDetailsContext} from '../../reducers/orderDetails';
@@ -28,14 +27,12 @@ const Search = ({navigation}: any) => {
   const [showSearchItems, setShowSearchItems] = useState(false);
   const [noItemModal, setNoItemModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState({});
-  const {state: orderDetailsState, dispatch} = useContext(OrderDetailsContext);
   const {state: orderState, dispatch: orderDispatch} = useContext(OrderContext);
   const {state: userState} = useContext(UserContext);
 
   const debouncedSearch = useDebounce(searchText, 700);
 
   useEffect(() => {
-    console.log(orderDetailsState, 'orderDetailsState');
     getAllItems();
   }, []);
 

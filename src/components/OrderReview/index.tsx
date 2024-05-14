@@ -35,8 +35,6 @@ const OrderReview = ({navigation, route}: any) => {
   const [deleteItemId, setDeleteItemId] = useState('');
   const {state: orderState, dispatch: orderDispatch} = useContext(OrderContext);
 
-  console.log(orderState, 'orderState', orderDetailsState);
-
   useEffect(() => {
     if (route?.params?.savedOrder) {
       setIsSavedOrder(route.params.savedOrder);
@@ -44,10 +42,8 @@ const OrderReview = ({navigation, route}: any) => {
   }, [route?.params]);
 
   const saveOrder = async () => {
-    console.log(orderState, 'orderState');
-
     try {
-      const response = await postAuthenticatedRequest('/orders', {
+      const response = await postRequest('/orders', {
         orders: orderState,
       });
       emptyOrderStore()(orderDispatch);
@@ -96,8 +92,6 @@ const OrderReview = ({navigation, route}: any) => {
     );
   };
 
-  console.log(orderState, 'orderState');
-  console.log(orderDetailsState, 'orderDetailsState');
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.container}>
@@ -116,13 +110,11 @@ const OrderReview = ({navigation, route}: any) => {
                     navigation.goBack();
                   }}
                   rightText={isSavedOrder ? '' : 'Delete'}
-                  onPressFunction={() => console.log('Pressed')}
                 />
 
                 <Label
                   leftText={'Order Date'}
                   rightText={new Date(orderDetailsState.ORD_DT).toDateString()}
-                  onPressRightText={() => console.log('Pressed')}
                   rightTextStyle={{color: Colors.TEXT_COLOR}}
                 />
                 <Label
@@ -130,7 +122,6 @@ const OrderReview = ({navigation, route}: any) => {
                   rightText={`${orderDetailsState.PARTY_NM} (${
                     orderDetailsState.REMARK ?? ''
                   })`}
-                  onPressRightText={() => console.log('Pressed')}
                   rightTextStyle={{color: Colors.TEXT_COLOR}}
                 />
                 <Label
@@ -138,7 +129,6 @@ const OrderReview = ({navigation, route}: any) => {
                   rightText={`${orderDetailsState.ADD1} ${
                     orderDetailsState.ADD1 ? ',' : ''
                   } ${orderDetailsState.PLACE}`}
-                  onPressRightText={() => console.log('Pressed')}
                   rightTextStyle={{color: Colors.TEXT_COLOR}}
                 />
               </View>

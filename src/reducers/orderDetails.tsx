@@ -78,9 +78,6 @@ export const OrderDetailsContextProvider = ({children}) => {
   // stores state and dispatch of species using the reducer and initialState
   const [state, dispatch] = useReducer(OrderDetailsReducer, initialState);
 
-  useEffect(() => {
-    console.log(state, '==++state++==');
-  }, [state]);
   // returns a provider used by component to access the state and dispatch function of species
   return (
     <OrderDetailsContext.Provider value={{state, dispatch}}>

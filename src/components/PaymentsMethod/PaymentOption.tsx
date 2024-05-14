@@ -15,8 +15,6 @@ const PaymentOption = ({
 }: any) => {
   const [checkboxState, setCheckboxState] = useState(false);
 
-  console.log(option, '==key==');
-
   const isChecked = selectedPaymentOption === option;
   return (
     <TouchableWithoutFeedback

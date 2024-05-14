@@ -178,12 +178,6 @@ const SearchInput = React.forwardRef(
     useEffect(() => {
       if (searchText) {
         const options = searchForOptions(debouncedSearch);
-
-        // const results = searchFunction(debouncedSearch);
-        // setShowSearchItems(true);
-        // getSearchedItems();
-      } else {
-        // setShowSearchItems(false);
       }
     }, [debouncedSearch]);
 
@@ -196,10 +190,6 @@ const SearchInput = React.forwardRef(
       },
       [selectedOption],
     );
-
-    useEffect(() => {
-      console.log('Mounted the component!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    }, []);
 
     const onBlur: () => void = useCallback(() => {
       setIsFocused(false);
@@ -383,9 +373,9 @@ const SearchInput = React.forwardRef(
               {isFocused ? (
                 <TouchableOpacity
                   onPress={() => {
-                    console.log('==close==');
                     setIsFocused(false);
                     setSearchText('');
+                    SelectOptionFunc('');
                   }}
                   style={{zIndex: 100000}}>
                   <Ionicons name="close" size={25} style={styles.closeIcon} />
@@ -423,8 +413,7 @@ const SearchInput = React.forwardRef(
                     backgroundColor: Colors.WHITE,
                     borderTopWidth: 0,
                     borderWidth: 1,
-                    // borderColor: Colors.GRAY_LIGHT,
-                    borderColor: 'red',
+                    borderColor: Colors.GRAY_LIGHT,
                     zIndex: 100000,
                   }}
                   onPress={() => {
@@ -438,6 +427,7 @@ const SearchInput = React.forwardRef(
                   <Text
                     style={{
                       fontSize: Typography.FONT_SIZE_16,
+                      color: Colors.TEXT_COLOR,
                     }}>
                     {option.name}
                   </Text>

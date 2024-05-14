@@ -66,8 +66,6 @@ const Search = ({navigation, ...props}: any) => {
     setShowSearchParties(false);
   };
 
-  console.log(navigation, 'navigation');
-  console.log(props.route.params);
   const renderListHeader = React.useMemo(() => {
     return (
       <>
@@ -282,8 +280,6 @@ const Search = ({navigation, ...props}: any) => {
             btnText="Continue"
             halfWidth={true}
             onPress={() => {
-              console.log(note, 'note1');
-
               continueOrder({remark: note});
             }}
           />

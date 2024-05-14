@@ -27,9 +27,10 @@ import {formatDate} from '../../utils/formatDate';
 import SearchInput from '../Common/SearchInput';
 import CollectionCard from './CollectionCard';
 import DateTimePicker from '../Common/DateTimePicker';
+import CollectionHeader from './CollectionHeader';
 
 const AllCollection = ({navigation}: any) => {
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [showDate, setShowDate] = useState(false);
@@ -38,77 +39,33 @@ const AllCollection = ({navigation}: any) => {
   const [showFilters, setShowFilters] = useState(false);
   const [payments, setPayments] = useState();
   const [paymentMethod, setPaymentMethod] = useState('');
-  const [searchedParties, setSearchedParties] = useState<any>([]);
-  // const [searchValue, setSearchValue] = useState<string>('');
+  // const [searchedParties, setSearchedParties] = useState<any>([]);
+  const [searchValue, setSearchValue] = useState<string>('');
   const searchInputRef = useRef<any>();
 
   useEffect(() => {
     getOrders();
-  }, [date, paymentMethod]);
+  }, [date, paymentMethod, searchValue, startDate, endDate]);
 
   const getOrders = useCallback(
     async (partyCode?: string) => {
-      console.log(partyCode, date, paymentMethod, 'partyCode');
+      let filters = `payment_method=${paymentMethod}`;
+      if (date) {
+        filters = filters + `&date=${date}`;
+      }
+      if (startDate && endDate) {
+        filters = filters + `&from=${startDate}&to=${endDate}`;
+      }
+      if (searchValue) {
+        filters = filters + `&partyCode=${searchValue}`;
+      }
 
-      const response = await getAuthenticatedRequest(
-        `/payments?date=${date}&payment_method=${paymentMethod}&partyCode=${
-          partyCode ?? ''
-        }`,
-      );
+      const response = await getAuthenticatedRequest(`/payments?${filters}`);
+
       setPayments(response.data[0]);
     },
-    [date, paymentMethod],
+    [date, paymentMethod, searchValue, startDate, endDate],
   );
-
-  const searchParties = useCallback(async (searchQuery: string) => {
-    try {
-      const parties: any = await getAuthenticatedRequest(
-        `/parties/search/?name=${searchQuery}&limit=5`,
-      );
-      // let partyNames;
-
-      if (parties.data.length > 0) {
-        const partyNames = parties.data.map((party: any) => {
-          return {name: party.PARTY_NM, id: party.PARTY_CD};
-        });
-        return partyNames;
-      }
-    } catch (err) {
-      console.log(err, '==Error==');
-    }
-  }, []);
-
-  const PaymentMethodOptions = [
-    {
-      key: '',
-      value: 'All',
-      disabled: false,
-    },
-    {
-      key: 'upi',
-      value: 'UPI',
-      disabled: false,
-    },
-    {
-      key: 'bank',
-      value: 'Bank ',
-      disabled: false,
-    },
-    {
-      key: 'cheque',
-      value: 'Cheque',
-      disabled: false,
-    },
-    {
-      key: 'cash',
-      value: 'Cash',
-      disabled: false,
-    },
-  ];
-
-  const SelectOptionFunc = useCallback((id: string) => {
-    getOrders(id);
-  }, []);
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -148,167 +105,61 @@ const AllCollection = ({navigation}: any) => {
                     </Text>
                   </View>
                 )}
-                ListHeaderComponent={() => (
-                  <View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                      }}>
-                      <TouchableOpacity
-                        onPressIn={() => {
-                          setShowDate(true);
-                        }}
-                        style={{marginVertical: 10, width: '48%'}}>
-                        <OutlinedInput
-                          // value={date?.UTC()}
-                          value={moment(date).tz('Asia/Kolkata').format('ll')}
-                          onChangeText={(text: string) => setDate(text)}
-                          label={'Date'}
-                          editable={false}
-                        />
-                      </TouchableOpacity>
-                      <DropDown
-                        label={'Payment Method'}
-                        options={PaymentMethodOptions}
-                        onChange={(type: any) => setPaymentMethod(type.key)}
-                        defaultValue={PaymentMethodOptions[0]}
-                        editable={true}
-                        containerStyle={{marginVertical: 10, width: '48%'}}
-                      />
-                    </View>
-                    {true ? (
-                      <>
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                          }}>
-                          <TouchableOpacity
-                            onPressIn={() => {
-                              setShowFromDate(true);
-                            }}
-                            style={{marginVertical: 10, width: '48%'}}>
-                            <OutlinedInput
-                              // value={date?.UTC()}
-                              value={
-                                startDate
-                                  ? moment(startDate)
-                                      .tz('Asia/Kolkata')
-                                      .format('ll')
-                                  : ''
-                              }
-                              onChangeText={(text: string) =>
-                                setStartDate(text)
-                              }
-                              label={'Start Date'}
-                              editable={false}
-                            />
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            onPressIn={() => {
-                              setShowToDate(true);
-                            }}
-                            style={{marginVertical: 10, width: '48%'}}>
-                            <OutlinedInput
-                              // value={date?.UTC()}
-                              value={
-                                endDate
-                                  ? moment(endDate)
-                                      .tz('Asia/Kolkata')
-                                      .format('ll')
-                                  : ''
-                              }
-                              onChangeText={(text: string) => setEndDate(text)}
-                              label={'End Date'}
-                              editable={false}
-                            />
-                          </TouchableOpacity>
-                        </View>
-                        <SearchInput
-                          label={'Party Name'}
-                          style={{marginVertical: 10, zIndex: 1}}
-                          searchFunction={searchParties}
-                          SelectOptionFunc={SelectOptionFunc}
-                          ref={searchInputRef}
-                          // value={searchValue}
-                          // setValue={setSearchValue}
-                          // options={searchedParties}
-                          // onFocusFunction={() => setElevation(100)}
-                        />
-                      </>
-                    ) : (
-                      []
-                    )}
-                    <TouchableOpacity
-                      style={{
-                        display: 'flex',
-                        alignItems: 'flex-end',
-                        paddingRight: 10,
-                      }}
-                      onPress={() => setShowFilters(!showFilters)}>
-                      <Text
-                        style={{
-                          color: Colors.PRIMARY,
-                          fontWeight: Typography.FONT_WEIGHT_BOLD,
-                        }}>
-                        {showFilters ? 'Less Filters' : 'More Filters'}
-                      </Text>
-                    </TouchableOpacity>
-                    {payments?.TOTAL_PAYMENT_TYPE_RCV_AMT ? (
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          marginTop: 10,
-                        }}>
-                        <Text
-                          style={{
-                            color: Colors.PRIMARY,
-                            fontWeight: Typography.FONT_WEIGHT_BOLD,
-                            fontFamily: Typography.FONT_FAMILY_REGULAR,
-                            fontSize: Typography.FONT_SIZE_16,
-                          }}>
-                          Total Collection: ₹
-                          {payments.TOTAL_PAYMENT_TYPE_RCV_AMT}
-                        </Text>
-                        {paymentMethod ? (
-                          <Text style={{color: Colors.TEXT_COLOR}}>
-                            {' '}
-                            ({paymentMethod})
-                          </Text>
-                        ) : (
-                          []
-                        )}
-                      </View>
-                    ) : null}
-                  </View>
-                )}
+                ListHeaderComponent={
+                  <CollectionHeader
+                    date={date}
+                    startDate={startDate}
+                    endDate={endDate}
+                    setShowDate={setShowDate}
+                    setShowFromDate={setShowFromDate}
+                    setShowToDate={setShowToDate}
+                    setPaymentMethod={setPaymentMethod}
+                    setSearchValue={setSearchValue}
+                    paymentMethod={paymentMethod}
+                    totalCollection={payments?.TOTAL_PAYMENT_TYPE_RCV_AMT}
+                  />
+                }
               />
             </View>
             <DateTimePicker
               date={date}
-              setDate={setDate}
+              // setDate={setDate}
               showDate={showDate}
               setShowDate={setShowDate}
               key={'date'}
               id={'date'}
+              onConfirm={(date: Date) => {
+                setDate(date);
+                setStartDate(undefined);
+                setEndDate(undefined);
+                setShowDate(false);
+              }}
             />
             <DateTimePicker
               date={startDate}
-              setDate={setStartDate}
+              // setDate={setStartDate}
               showDate={showFromDate}
               setShowDate={setShowFromDate}
               key={'fromDate'}
               id={'fromDate'}
+              onConfirm={(date: Date) => {
+                setStartDate(date);
+                setDate(undefined);
+                setShowFromDate(false);
+              }}
             />
             <DateTimePicker
               date={endDate}
-              setDate={setEndDate}
+              // setDate={setEndDate}
               showDate={showToDate}
               setShowDate={setShowToDate}
               key={'toDate'}
               id={'toDate'}
+              onConfirm={(date: Date) => {
+                setEndDate(date);
+                setDate(undefined);
+                setShowToDate(false);
+              }}
             />
           </View>
         </View>

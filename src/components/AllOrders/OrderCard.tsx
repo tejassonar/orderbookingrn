@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Colors, Typography} from '../../styles';
 import {Row, Table} from 'react-native-table-component';
+import SharePDFReport from './SharePDFReport';
 
 const OrderCard = ({data}) => {
   const formatDate = dateStr => {
@@ -11,6 +12,14 @@ const OrderCard = ({data}) => {
 
   return (
     <View style={styles.container}>
+      <SharePDFReport
+        PARTY_NM={data.PARTY_NM}
+        PARTY_CD={data.PARTY_CD}
+        ORD_DT={formatDate(data.ORD_DT)}
+        ITEMS={data.ITEMS}
+        ADDRESS={data.ADD1}
+        PLACE={data.PLACE}
+      />
       <Text style={styles.title}>{data.PARTY_NM}</Text>
       <Text style={styles.text}>Party Code: {data.PARTY_CD}</Text>
       <Text style={styles.text}>Address: {data.ADD1}</Text>

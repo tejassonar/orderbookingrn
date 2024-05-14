@@ -26,6 +26,7 @@ import {billPayemnts} from '../../assets/billPayments';
 import Header from '../Common/Header';
 import avatar from '../../assets/avatar.png';
 import SearchInput from '../Common/SearchInput';
+import moment from 'moment';
 // import {customAlphabet} from 'nanoid/non-secure';
 const MainScreen = ({navigation}: any) => {
   const [partiesUploading, setPartiesUploading] = useState(false);
@@ -154,7 +155,6 @@ const MainScreen = ({navigation}: any) => {
   const onClickUploadData = () => {
     navigation.navigate('AllCollection');
   };
-
   return (
     <SafeAreaView style={styles.mainContainer}>
       <Header

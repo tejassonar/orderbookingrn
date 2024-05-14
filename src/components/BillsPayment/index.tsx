@@ -123,25 +123,21 @@ const BillsPayment = ({navigation, route}: any) => {
                     // await emptyOrderDetails()(orderDetailsDispatch);
                     navigation.goBack();
                   }}
-                  onPressFunction={() => console.log('Pressed')}
                 />
 
                 <Label
                   leftText={'Payment Date'}
                   rightText={new Date().toDateString()}
-                  onPressRightText={() => console.log('Pressed')}
                   rightTextStyle={{color: Colors.TEXT_COLOR}}
                 />
                 <Label
                   leftText={'Party Name'}
                   rightText={route.params?.partyName}
-                  onPressRightText={() => console.log('Pressed')}
                   rightTextStyle={{color: Colors.TEXT_COLOR}}
                 />
                 <Label
                   leftText={'Pending Amount'}
                   rightText={`₹${allBills?.totalPendingAmount ?? 0}`}
-                  onPressRightText={() => console.log('Pressed')}
                   rightTextStyle={{color: Colors.TEXT_COLOR}}
                 />
               </View>

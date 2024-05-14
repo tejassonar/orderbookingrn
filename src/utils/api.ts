@@ -14,8 +14,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {protocol, url: baseURL} = APIConfig;
 
-console.log(protocol, baseURL, 'URL');
-
 // creates and axios instance with base url
 const axiosInstance = axios.create({
   baseURL: `${protocol}://${baseURL}`,
@@ -133,7 +131,6 @@ const request = async ({
       // let accessToken;
       AsyncStorage.getItem('User').then(async (user: any) => {
         const userObject = await JSON.parse(user);
-        console.log(userObject.accessToken, '+==userObject.accessToken==+');
 
         options.headers = {
           Authorization: `Bearer ${userObject.accessToken}`,
@@ -147,8 +144,6 @@ const request = async ({
       // returns a promise with axios instance
       // });
     } else {
-      console.log('Axios Else', options);
-
       // returns a promise with axios instance
       axiosInstance(options).then(resolve).catch(reject);
     }

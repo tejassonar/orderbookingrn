@@ -66,8 +66,6 @@ export const EditItemDetails = ({navigation, route}: any) => {
   const editItem = async () => {
     try {
       setIsDisabled(true);
-      console.log(route.params.orderItemId, 'route.params.orderItemId');
-
       if (route.params.orderItemId) {
         const response = await putAuthenticatedRequest(
           `/orders/${route.params.orderItemId}`,
@@ -99,8 +97,6 @@ export const EditItemDetails = ({navigation, route}: any) => {
       editItem();
     }
   };
-
-  console.log(orderState, 'DIA Hei');
 
   return (
     <View style={{flex: 1}}>
