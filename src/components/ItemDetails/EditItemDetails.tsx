@@ -66,20 +66,23 @@ export const EditItemDetails = ({navigation, route}: any) => {
   const editItem = async () => {
     try {
       setIsDisabled(true);
+      const data: {RATE: number; QTY: number; SCHEME_PRICE?: number} = {
+        QTY: height,
+        RATE: diameter,
+      };
+      if (userState.AGENCY) {
+        data.SCHEME_PRICE = scheme;
+      }
       if (route.params.orderItemId) {
         const response = await putAuthenticatedRequest(
           `/orders/${route.params.orderItemId}`,
-          {
-            QTY: height,
-            RATE: diameter,
-            SCHEME_PRICE: scheme,
-          },
+          data,
         );
       }
 
       const payload = {
         index: route.params.index,
-        data: {RATE: diameter, QTY: height, SCHEME_PRICE: scheme},
+        data: data,
       };
       // addItemToOrder(item)(orderDispatch);
       const res = await editItemInOrder(payload)(orderDispatch);

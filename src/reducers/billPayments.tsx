@@ -3,6 +3,7 @@ import {
   INITIATE_BILL_PAYMENT,
   ADD_BILLS,
   EMPTY_BILL_PAYMENT_STORE,
+  ADD_PAYMENT_DETAILS,
 } from '../actions/types';
 
 interface BillPaymentInterface {
@@ -25,14 +26,15 @@ interface BillPaymentInterface {
   AGENT_CD: string;
   TRANSACTION_NO?: string;
   CHQ_DT?: Date;
+  TOTAL?: number;
   PAYMENT_TYPE?: string;
 }
 
 // stores the initial properties of the species state
-const initialState: BillPaymentInterface = [];
+const initialState: BillPaymentInterface | {} = {};
 
 // Species reducer function which takes the state and action param
-const BillPaymentReducer = (state = initialState, action) => {
+const BillPaymentReducer = (state = initialState, action: any) => {
   // used to switch between the action types
   switch (action.type) {
     case INITIATE_BILL_PAYMENT:
@@ -42,6 +44,12 @@ const BillPaymentReducer = (state = initialState, action) => {
       //   const newState = [...state];
       //   newState.BILLS.push(action.payload);
       return {...state, ...action.payload};
+
+    case ADD_PAYMENT_DETAILS:
+      return {
+        ...state,
+        ...action.payload,
+      };
 
     case EMPTY_BILL_PAYMENT_STORE:
       return initialState;

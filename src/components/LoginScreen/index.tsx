@@ -14,11 +14,14 @@ import {ActivityIndicator} from 'react-native';
 import {login} from '../../utils/login';
 import {updateUserDetails} from '../../actions/user';
 import {UserContext} from '../../reducers/user';
+// import {Icon} from 'react-native-paper';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const LoginScreen = ({navigation}: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {state: userState, dispatch: userDispatch} = useContext(UserContext);
   const handleEmailChange = (email: any) => {
@@ -62,14 +65,25 @@ const LoginScreen = ({navigation}: any) => {
         value={email}
         onChangeText={handleEmailChange}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor={Colors.GRAY_LIGHTEST}
-        secureTextEntry={true}
-        value={password}
-        onChangeText={handlePasswordChange}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, {borderWidth: 0, padding: 0, paddingLeft: 8}]}
+          placeholder="Password"
+          placeholderTextColor={Colors.GRAY_LIGHTEST}
+          secureTextEntry={!showPassword}
+          value={password}
+          onChangeText={handlePasswordChange}
+        />
+        <TouchableOpacity
+          style={styles.iconContainer}
+          onPress={() => setShowPassword(!showPassword)}>
+          <Icon
+            name={showPassword ? 'eye-off' : 'eye'}
+            size={24}
+            color="#666"
+          />
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity
         style={styles.button}
         onPress={handleLogin}
@@ -120,6 +134,19 @@ const styles = StyleSheet.create({
     marginTop: 32,
     minWidth: 120,
     minHeight: 40,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    width: '80%',
+    // borderColor: '#ddd',
+    borderRadius: 4,
+    // backgroundColor: '#fff',
+  },
+  iconContainer: {
+    paddingLeft: 24,
   },
   buttonText: {
     color: '#fff',

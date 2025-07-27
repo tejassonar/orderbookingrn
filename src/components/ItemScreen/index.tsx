@@ -121,7 +121,6 @@ const Search = ({navigation}: any) => {
       setNoItemModal(true);
     }
   };
-  console.log(orderState.length, 'orderState.length');
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -214,7 +213,7 @@ const Search = ({navigation}: any) => {
                     }}>
                     {props.item.ITEM_NM} {props.item.LORY_NO ? '-' : ''}
                     {props.item.LORY_NO} {props.item.PKG ? '-' : ' '}{' '}
-                    {`${props.item.PKG} PKG`}
+                    {userState.AGENCY ? `${props.item.PKG} PKG` : ''}
                   </Text>
                   {!userState.BROKER ? (
                     <Text

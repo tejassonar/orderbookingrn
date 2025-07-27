@@ -21,15 +21,17 @@ import {
   postRequest,
 } from '../../utils/api';
 import {emptyOrderStore, removeItemFromOrder} from '../../actions/order';
-import {emptyOrderDetails} from '../../actions/orderDetails';
+import {addOrderDetails, emptyOrderDetails} from '../../actions/orderDetails';
 import {Table, Row, TableWrapper, Cell} from 'react-native-table-component';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import SimpleModal from '../Common/Modal';
+import {format, isToday, isYesterday} from 'date-fns';
+import {UserContext} from '../../reducers/user';
 
 const OrderReview = ({navigation, route}: any) => {
   const {state: orderDetailsState, dispatch: orderDetailsDispatch} =
     useContext(OrderDetailsContext);
-
+  const {state: userState} = useContext(UserContext);
   const [isSavedOrder, setIsSavedOrder] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState('');
@@ -43,9 +45,26 @@ const OrderReview = ({navigation, route}: any) => {
 
   const saveOrder = async () => {
     try {
-      const response = await postRequest('/orders', {
-        orders: orderState,
-      });
+      const newItems = orderState
+        .filter(item => item.additionalItem)
+        .map(item => {
+          return {
+            ...item,
+            orderId: orderState[0].orderItemId,
+            COMP_CD: userState.COMP_CD,
+            CLIENT_CD: userState.CLIENT_CD,
+            AGENT_CD: userState.AGENT_CD,
+          };
+        });
+      if (newItems.length > 0) {
+        const response = await postAuthenticatedRequest('/orders/item', {
+          orders: newItems,
+        });
+      } else {
+        const response = await postRequest('/orders', {
+          orders: orderState,
+        });
+      }
       emptyOrderStore()(orderDispatch);
       emptyOrderDetails()(orderDetailsDispatch);
 
@@ -92,6 +111,9 @@ const OrderReview = ({navigation, route}: any) => {
     );
   };
 
+  console.log('====================================');
+  console.log(userState);
+  console.log('====================================');
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.container}>
@@ -115,6 +137,15 @@ const OrderReview = ({navigation, route}: any) => {
                 <Label
                   leftText={'Order Date'}
                   rightText={new Date(orderDetailsState.ORD_DT).toDateString()}
+                  rightTextStyle={{color: Colors.TEXT_COLOR}}
+                />
+                <Label
+                  leftText={'Time'}
+                  rightText={
+                    userState.ADMIN &&
+                    orderDetailsState?.createdAt &&
+                    format(new Date(orderDetailsState.createdAt), 'KK:mmbbb')
+                  }
                   rightTextStyle={{color: Colors.TEXT_COLOR}}
                 />
                 <Label
@@ -151,17 +182,28 @@ const OrderReview = ({navigation, route}: any) => {
                 {orderState && (
                   <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
                     <Row
-                      data={['Item', 'Quantity', 'Price', 'Action']}
+                      data={
+                        userState?.SETTINGS?.orderEditable
+                          ? ['Item', 'Quantity', 'Price', 'Action']
+                          : ['Item', 'Quantity', 'Price']
+                      }
                       style={styles.head}
                       textStyle={styles.headerText}
                     />
                     {orderState.map((rowData, index) => {
-                      const itemData = [
-                        `${rowData.ITEM_NM} - ${rowData.LORY_NO}`,
-                        rowData.QTY,
-                        rowData.RATE,
-                        rowData.orderItemId,
-                      ];
+                      const itemData = userState?.SETTINGS?.orderEditable
+                        ? [
+                            `${rowData.ITEM_NM} - ${rowData.LORY_NO}`,
+                            rowData.QTY,
+                            rowData.RATE,
+                            rowData.orderItemId,
+                          ]
+                        : [
+                            `${rowData.ITEM_NM} - ${rowData.LORY_NO}`,
+                            rowData.QTY,
+                            rowData.RATE,
+                            // rowData.orderItemId,
+                          ];
                       return (
                         <TableWrapper key={index} style={styles.row}>
                           {itemData.map((cellData, cellIndex) => {
@@ -195,6 +237,21 @@ const OrderReview = ({navigation, route}: any) => {
                   </Table>
                 )}
               </View>
+              {orderDetailsState.ORDER_STATUS !== 'PENDING' &&
+                isToday(orderDetailsState.createdAt) && (
+                  <PrimaryButton
+                    onPress={() => {
+                      addOrderDetails({
+                        ORDER_STATUS: 'PENDING',
+                        additionalItem: true,
+                      })(orderDetailsDispatch);
+                      navigation.navigate('ItemScreen');
+                    }}
+                    btnText="Add Item"
+                    theme="white"
+                    style={{marginTop: 10}}
+                  />
+                )}
             </ScrollView>
             {orderDetailsState.ORDER_STATUS === 'PENDING' && (
               <View style={styles.bottomButtonContainer}>

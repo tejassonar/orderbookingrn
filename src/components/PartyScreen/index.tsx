@@ -136,7 +136,7 @@ const Search = ({navigation, ...props}: any) => {
     if (selectedParty.PARTY_CD) {
       navigation.navigate('BillsPayment', {
         partyCode: selectedParty.PARTY_CD,
-        partyName: selectedParty.PARTY_NM,
+        partyName: `${selectedParty.PARTY_NM} ${selectedParty.ADD1} ${selectedParty.PLACE}`,
       });
     } else {
       setNoPartyModal(true);

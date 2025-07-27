@@ -21,7 +21,7 @@ import {UserContext} from '../../reducers/user';
 import {formatDate} from '../../utils/formatDate';
 
 const BillsPayment = ({navigation, route}: any) => {
-  const [deleteItemId, setDeleteItemId] = useState('');
+  const [disableButton, setDisableButton] = useState(false);
   const [allBills, setAllBills] = useState();
   const {state: billPaymentState, dispatch: billPaymentDispatch} =
     useContext(BillPaymentContext);
@@ -60,6 +60,7 @@ const BillsPayment = ({navigation, route}: any) => {
 
   const addBillPayment = async () => {
     try {
+      setDisableButton(true);
       const bills = allBills.bills;
       const payload = {
         BILL_DT: new Date().toISOString().split('T')[0],
@@ -160,7 +161,7 @@ const BillsPayment = ({navigation, route}: any) => {
                         `${rowData.PND_AMT} (${rowData.BIL_AMT})`,
                         `${rowData.BIL_AMT}`,
                       ];
-                      return (
+                      return rowData.PND_AMT ? (
                         <TableWrapper key={index} style={styles.row}>
                           {itemData.map((cellData, cellIndex) => {
                             return (
@@ -189,6 +190,10 @@ const BillsPayment = ({navigation, route}: any) => {
                             );
                           })}
                         </TableWrapper>
+                      ) : (
+                        <TableWrapper
+                          key={index}
+                          style={styles.row}></TableWrapper>
                       );
                     })}
                     {/* {orderState.map((item, index) => (
@@ -214,7 +219,7 @@ const BillsPayment = ({navigation, route}: any) => {
                 }}
                 btnText={'Add Payment of ₹' + totalPay()}
                 style={{marginTop: 10}}
-                disabled={!totalPay()}
+                disabled={!totalPay() || disableButton}
               />
             </View>
           </View>

@@ -19,6 +19,7 @@ function SharePDFReport({
 }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [count, setCount] = useState(1);
+  // console.log(BILLS, 'BILLS');
 
   const generatePDF = async () => {
     setIsLoading(true);
@@ -141,9 +142,7 @@ function SharePDFReport({
 
     return (
       RNFS.unlink(path)
-        .then(() => {
-          console.log('FILE DELETED');
-        })
+        .then(() => {})
         // `unlink` will throw an error, if the item to unlink does not exist
         .catch(err => {
           console.log(err.message);

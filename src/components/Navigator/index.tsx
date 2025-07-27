@@ -64,7 +64,6 @@ export default function AppNavigator() {
     }
   };
 
-  const validateAccessToken = () => {};
   return (
     <NavigationContainer>
       <StatusBar

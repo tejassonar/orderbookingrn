@@ -155,6 +155,9 @@ const MainScreen = ({navigation}: any) => {
   const onClickUploadData = () => {
     navigation.navigate('AllCollection');
   };
+
+  console.log(userState, 'userState.ADMIN');
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <Header

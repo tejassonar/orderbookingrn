@@ -101,7 +101,7 @@ const AllOrders = ({navigation}: any) => {
               <FlatList
                 data={orders}
                 renderItem={order => (
-                  <View style={{zIndex: -100}}>
+                  <View>
                     {listView ? (
                       <TouchableOpacity
                         // key={index}
@@ -140,18 +140,17 @@ const AllOrders = ({navigation}: any) => {
                         </View>
                       </TouchableOpacity>
                     ) : (
-                      <OrderCard data={order.item} />
+                      order.item && <OrderCard data={order.item} />
                     )}
                   </View>
                 )}
-                keyExtractor={order => order?._id}
+                keyExtractor={(order, index) => order?._id || index.toString()}
                 showsVerticalScrollIndicator={false}
-                ListHeaderComponentStyle={{zIndex: 100}}
-                removeClippedSubviews={false}
-                keyboardShouldPersistTaps="always"
+                initialNumToRender={10}
+                keyboardShouldPersistTaps="handled"
                 ListEmptyComponent={() => (
                   <View style={styles.svgContainer}>
-                    <SvgXml xml={noOrder} height={'250px'} width={'250px'} />
+                    <SvgXml xml={noOrder} height="250px" width="250px" />
                     <Text style={styles.svgText}>No Orders Found</Text>
                     <Text style={styles.svgSubText}>
                       Looks like there aren't any orders for this day

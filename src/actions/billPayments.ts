@@ -2,6 +2,7 @@ import {
   INITIATE_BILL_PAYMENT,
   ADD_BILLS,
   EMPTY_BILL_PAYMENT_STORE,
+  ADD_PAYMENT_DETAILS,
 } from './types';
 
 export const initiateBillPayment =
@@ -24,3 +25,11 @@ export const emptyBillPaymentStore = () => (dispatch: React.Dispatch<any>) => {
     type: EMPTY_BILL_PAYMENT_STORE,
   });
 };
+
+export const addPaymentDetails =
+  (data: any) => (dispatch: React.Dispatch<any>) => {
+    dispatch({
+      type: ADD_PAYMENT_DETAILS,
+      payload: data,
+    });
+  };

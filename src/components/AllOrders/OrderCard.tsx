@@ -1,17 +1,20 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Colors, Typography} from '../../styles';
 import {Row, Table} from 'react-native-table-component';
 import SharePDFReport from './SharePDFReport';
+import {format} from 'date-fns';
+import {UserContext} from '../../reducers/user';
 
-const OrderCard = ({data}) => {
+const OrderCard = ({data, key}) => {
   const formatDate = dateStr => {
     const date = new Date(dateStr);
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   };
+  const {state: userState} = useContext(UserContext);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} key={key}>
       <SharePDFReport
         PARTY_NM={data.PARTY_NM}
         PARTY_CD={data.PARTY_CD}
@@ -24,7 +27,10 @@ const OrderCard = ({data}) => {
       <Text style={styles.text}>Party Code: {data.PARTY_CD}</Text>
       <Text style={styles.text}>Address: {data.ADD1}</Text>
       <Text style={styles.text}>Place: {data.PLACE}</Text>
-      <Text style={styles.text}>Date: {formatDate(data.ORD_DT)}</Text>
+      <Text style={styles.text}>
+        Date: {formatDate(data.ORD_DT)}{' '}
+        {userState.ADMIN && format(new Date(data.createdAt), 'KK:mmbbb')}
+      </Text>
       <Table
         borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}
         style={{marginTop: 10}}>
@@ -33,14 +39,24 @@ const OrderCard = ({data}) => {
           style={styles.head}
           textStyle={styles.headerText}
         />
-        {data.ITEMS.map((item, index) => (
-          <Row
-            key={`item-${index}`}
-            data={[`${item.ITEM_NM} - ${item.LORY_NO}`, item.QTY, item.RATE]}
-            // style={styles.text}
-            textStyle={styles.rowText}
-          />
-        ))}
+        {/* {data?.ITEMS &&
+          data.ITEMS.length > 0 &&
+          data.ITEMS.map((item, index) => (
+            <Row
+              key={`item-${index}`}
+              data={[`${item.ITEM_NM}`, item.QTY, item.RATE]}
+              // style={styles.text}
+              textStyle={styles.rowText}
+            />
+          ))} */}
+        {Array.isArray(data?.ITEMS) &&
+          data.ITEMS.map((item, index) => (
+            <Row
+              key={`item-${index}`}
+              data={[`${item.ITEM_NM}-${item.LORY_NO}`, item.QTY, item.RATE]}
+              textStyle={styles.rowText}
+            />
+          ))}
       </Table>
     </View>
   );
